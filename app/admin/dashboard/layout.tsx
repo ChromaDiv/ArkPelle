@@ -7,7 +7,8 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
   // ── Auth guard ──────────────────────────────────────────────────────────────
   // When Supabase is not configured (local dev with placeholder keys),
   // bypass auth so the UI is still explorable.
-  if (isSupabaseConfigured()) {
+  const bypassAuth = process.env.BYPASS_AUTH === 'true';
+  if (isSupabaseConfigured() && !bypassAuth) {
     const supabase = await createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
 
