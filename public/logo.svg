@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 44" fill="none" aria-label="Ark Pelle Logo">
+  <defs>
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- Three Pillar Mark: Enlarged and bold geometric gold slashes -->
+  <path d="M 0,11 L 8.5,3 L 8.5,41 L 0,33 Z" fill="#B8934A" />
+  <path d="M 11.5,11 L 20,3 L 20,41 L 11.5,33 Z" fill="#B8934A" />
+  <path d="M 23,11 L 31.5,3 L 31.5,41 L 23,33 Z" fill="#B8934A" />
+  
+  <!-- Logotype: "ARK PELLE" in wide-spaced elegant serif capitals with expanded Y-viewBox -->
+  <text
+    x="45"
+    y="31"
+    font-family="'Cormorant Garamond', Georgia, serif"
+    font-size="26"
+    font-weight="300"
+    letter-spacing="6.5"
+    fill="#B8934A"
+  >ARK PELLE</text>
+</svg>
