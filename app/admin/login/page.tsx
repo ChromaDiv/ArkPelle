@@ -23,7 +23,7 @@ export default function AdminLoginPage() {
       email,
       options: {
         shouldCreateUser: false, // Admin must already exist in Supabase Auth
-        emailRedirectTo: `${window.location.origin}/admin/dashboard`,
+        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/admin/dashboard`,
       },
     });
 
