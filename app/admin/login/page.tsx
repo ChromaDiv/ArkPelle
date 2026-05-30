@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
       {/* Grain overlay */}
       <div style={styles.grain} aria-hidden="true" />
 
-      <div style={styles.card}>
+      <div className="admin-login-card" style={styles.card}>
         {/* Logo mark */}
         <div style={styles.logoWrap}>
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
@@ -63,6 +63,7 @@ export default function AdminLoginPage() {
               onChange={e => setEmail(e.target.value)}
               placeholder="admin@arkpelle.com"
               style={styles.input}
+              className="admin-login-input"
               disabled={loading}
             />
             {error && <p style={styles.error}>{error}</p>}
@@ -101,6 +102,17 @@ export default function AdminLoginPage() {
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 480px) {
+          .admin-login-card {
+            padding: 2.25rem 1.5rem !important;
+            margin: 1rem !important;
+            gap: 0.15rem !important;
+          }
+          .admin-login-input {
+            font-size: 16px !important; /* Prevents auto-zoom on iOS */
+            padding: 0.85rem 1rem !important; /* Larger touch area */
+          }
         }
       `}</style>
     </div>

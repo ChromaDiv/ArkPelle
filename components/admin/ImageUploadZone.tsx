@@ -159,6 +159,7 @@ export default function ImageUploadZone({ images, onChange, productName = '' }: 
                 onChange={e => updateAlt(i, e.target.value)}
                 placeholder="Alt text…"
                 style={styles.altInput}
+                className="admin-upload-alt-input"
                 aria-label={`Alt text for image ${i + 1}`}
               />
             </div>
@@ -168,6 +169,12 @@ export default function ImageUploadZone({ images, onChange, productName = '' }: 
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 480px) {
+          .admin-upload-alt-input {
+            font-size: 16px !important;
+            padding: 0.5rem 0.65rem !important; /* Larger touch area */
+          }
+        }
       `}</style>
     </div>
   );

@@ -18,7 +18,7 @@ export default async function AdminDashboardPage() {
   return (
     <div style={styles.page}>
       {/* Page header */}
-      <div style={styles.pageHeader}>
+      <div className="admin-page-header" style={styles.pageHeader}>
         <div>
           <h1 style={styles.pageTitle}>Products</h1>
           <p style={styles.pageMeta}>
@@ -38,7 +38,7 @@ export default async function AdminDashboardPage() {
       <div style={styles.rule} />
 
       {/* Stats row */}
-      <div style={styles.statsRow}>
+      <div className="admin-stats-grid" style={styles.statsRow}>
         <StatCard label="Total Products" value={products.length} />
         <StatCard label="Active" value={activeCount} accent />
         <StatCard label="Draft / Archived" value={draftCount} />
@@ -54,6 +54,30 @@ export default async function AdminDashboardPage() {
 
       {/* Table */}
       <ProductTable products={products} />
+
+      <style>{`
+        @media (max-width: 768px) {
+          .admin-page-header {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 1.25rem !important;
+          }
+          .admin-page-header a {
+            display: inline-flex !important;
+            justify-content: center !important;
+            width: 100% !important;
+            padding: 0.85rem !important; /* Larger touch target */
+          }
+          .admin-stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .admin-stats-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -71,7 +71,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
       )}
 
       {/* ── Two-column grid ── */}
-      <div style={styles.grid}>
+      <div className="admin-form-grid" style={styles.grid}>
 
         {/* LEFT: Core fields */}
         <div style={styles.col}>
@@ -260,7 +260,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
       </div>
 
       {/* ── Submit bar ── */}
-      <div style={styles.submitBar}>
+      <div className="admin-form-submit-bar" style={styles.submitBar}>
         <button
           type="button"
           id="form-cancel-btn"
@@ -296,6 +296,39 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
         #field-slug:focus, textarea:focus, input:focus {
           border-color: rgba(184, 147, 74, 0.5) !important;
           outline: none;
+        }
+
+        @media (max-width: 992px) {
+          .admin-form-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .admin-form-grid input,
+          .admin-form-grid textarea,
+          .admin-form-grid select {
+            font-size: 16px !important; /* Prevents auto-zoom on iOS */
+            padding: 0.85rem 1rem !important; /* Larger touch area */
+          }
+          
+          /* Special spacing adjustment for inline dimensions grids */
+          .admin-form-grid div[style*="gridTemplateColumns"] {
+            gap: 0.5rem !important;
+          }
+
+          .admin-form-submit-bar {
+            flex-direction: column-reverse !important;
+            align-items: stretch !important;
+            gap: 0.75rem !important;
+          }
+          .admin-form-submit-bar button {
+            width: 100% !important;
+            justify-content: center !important;
+            padding: 0.85rem 0.5rem !important; /* Finger-friendly touch target */
+            font-size: 0.75rem !important;
+          }
         }
       `}</style>
     </form>

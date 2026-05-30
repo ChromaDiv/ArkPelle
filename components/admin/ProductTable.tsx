@@ -51,7 +51,7 @@ export default function ProductTable({ products }: ProductTableProps) {
   return (
     <div style={styles.root}>
       {/* Header row */}
-      <div style={styles.tableHeader}>
+      <div className="admin-table-header" style={styles.tableHeader}>
         <div style={styles.col_thumb} />
         <div style={styles.col_name}>Product</div>
         <div style={styles.col_price}>Price</div>
@@ -73,6 +73,7 @@ export default function ProductTable({ products }: ProductTableProps) {
           <div
             key={product.id}
             id={`product-row-${product.id}`}
+            className="admin-table-row"
             style={{
               ...styles.row,
               opacity: !product.is_active ? 0.5 : 1,
@@ -80,7 +81,7 @@ export default function ProductTable({ products }: ProductTableProps) {
             }}
           >
             {/* Thumbnail */}
-            <div style={styles.col_thumb}>
+            <div className="admin-col-thumb" style={styles.col_thumb}>
               <div style={styles.thumb}>
                 {product.images?.[0] ? (
                   <Image
@@ -97,25 +98,25 @@ export default function ProductTable({ products }: ProductTableProps) {
             </div>
 
             {/* Name + slug */}
-            <div style={styles.col_name}>
+            <div className="admin-col-name" style={styles.col_name}>
               <span style={styles.productName}>{product.name}</span>
               <span style={styles.productSlug}>/shop/{product.slug}</span>
             </div>
 
             {/* Price */}
-            <div style={styles.col_price}>
+            <div className="admin-col-price" style={styles.col_price}>
               <span style={styles.price}>
                 {formatPrice(product.price_cents, product.currency)}
               </span>
             </div>
 
             {/* Status */}
-            <div style={styles.col_status}>
+            <div className="admin-col-status" style={styles.col_status}>
               <StatusBadge isActive={product.is_active} />
             </div>
 
             {/* Actions */}
-            <div style={styles.col_actions}>
+            <div className="admin-col-actions" style={styles.col_actions}>
               <Link
                 href={`/admin/dashboard/${product.slug}/edit`}
                 id={`edit-product-${product.id}`}
@@ -165,6 +166,56 @@ export default function ProductTable({ products }: ProductTableProps) {
           </div>
         ))}
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .admin-table-header {
+            display: none !important;
+          }
+          .admin-table-row {
+            grid-template-columns: 56px 1fr !important;
+            grid-template-rows: auto auto auto auto !important;
+            gap: 0.5rem !important;
+            padding: 1.25rem 1rem !important;
+            border-bottom: 1px solid rgba(184, 147, 74, 0.1) !important;
+            align-items: start !important;
+          }
+          .admin-col-thumb {
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+          }
+          .admin-col-name {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+          }
+          .admin-col-price {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+            margin-top: 0.15rem;
+          }
+          .admin-col-status {
+            grid-column: 2 / 3;
+            grid-row: 3 / 4;
+            margin-top: 0.25rem;
+          }
+          .admin-col-actions {
+            grid-column: 1 / 3;
+            grid-row: 4 / 5;
+            display: flex !important;
+            justify-content: flex-start !important;
+            width: 100% !important;
+            margin-top: 0.75rem;
+            gap: 0.5rem !important;
+          }
+          .admin-col-actions a,
+          .admin-col-actions button {
+            flex: 1;
+            justify-content: center !important;
+            padding: 0.75rem 0.5rem !important; /* Premium finger-friendly touch target */
+            font-size: 0.7rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
