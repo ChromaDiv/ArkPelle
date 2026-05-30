@@ -67,8 +67,27 @@ export default function ProductDeepDive() {
 
       {/* Sticky panel */}
       <div className="sticky top-0 h-screen overflow-hidden">
-        <div className="container-brand h-full flex flex-col justify-center py-16 relative z-10">
+        {/* Immersive Background Images Layer */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          {features.map((feature, index) => {
+            const start = index / features.length;
+            const end = (index + 1) / features.length;
 
+            return (
+              <BackgroundImage
+                key={feature.id}
+                image={feature.image}
+                imageAlt={feature.imageAlt}
+                scrollYProgress={scrollYProgress}
+                start={start}
+                end={end}
+                shouldReduce={shouldReduce ?? false}
+              />
+            );
+          })}
+        </div>
+
+        <div className="container-brand h-full flex flex-col justify-center py-16 relative z-10">
           {/* Section label */}
           <div className="absolute top-12 left-[clamp(1.5rem,5vw,6rem)]">
             <p className="font-body text-2xs tracking-[0.3em] uppercase text-[var(--color-gold)]">
@@ -114,6 +133,53 @@ export default function ProductDeepDive() {
         </div>
       </div>
     </section>
+  );
+}
+
+function BackgroundImage({
+  image,
+  imageAlt,
+  scrollYProgress,
+  start,
+  end,
+  shouldReduce,
+}: {
+  image: string;
+  imageAlt: string;
+  scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress'];
+  start: number;
+  end: number;
+  shouldReduce: boolean;
+}) {
+  const opacity = useTransform(
+    scrollYProgress,
+    [start, start + 0.05, end - 0.05, end],
+    shouldReduce ? [0.35, 0.35, 0.35, 0.35] : [0, 0.35, 0.35, 0]
+  );
+  const scale = useTransform(
+    scrollYProgress,
+    [start, end],
+    shouldReduce ? [1, 1] : [1.05, 1.0]
+  );
+
+  return (
+    <motion.div
+      className="absolute inset-0 w-full h-full"
+      style={{ opacity }}
+    >
+      <motion.div className="relative w-full h-full" style={{ scale }}>
+        <Image
+          src={image}
+          alt={imageAlt}
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+          priority
+        />
+        {/* Light elegant Vignette Overlay for crisp background details */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ground)]/85 via-[var(--color-ground)]/30 to-[var(--color-ground)]/75" />
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -163,7 +229,7 @@ function FeaturePanel({
       </div>
 
       {/* Image side */}
-      <div className="relative flex-1 aspect-square max-w-md w-full rounded-none overflow-hidden bg-[var(--color-surface)]">
+      <div className="relative flex-1 aspect-square max-w-md w-full rounded-2xl overflow-hidden bg-[var(--color-surface)] shadow-2xl">
         <Image
           src={feature.image}
           alt={feature.imageAlt}

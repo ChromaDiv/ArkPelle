@@ -10,9 +10,7 @@ export const MOCK_PRODUCTS: Product[] = [
     currency: 'USD',
     images: [
       { url: '/wallet_main.jpg', alt: 'No. 1 Slim Wallet — Espresso, front view on dark surface' },
-      { url: 'https://images.unsplash.com/photo-1614330315994-efd5ea8163a1?w=1600&q=90', alt: 'No. 1 Slim Wallet — open, showing card capacity' },
-      { url: 'https://images.unsplash.com/photo-1614267118647-20c5ffa6a6e4?w=1600&q=90', alt: 'No. 1 Slim Wallet — artisan crafting workshop details' },
-      { url: 'https://images.unsplash.com/photo-1571829604981-ea159f94e5ad?w=1600&q=90', alt: 'No. 1 Slim Wallet — texture close-up' }
+      { url: '/wallet_open.png', alt: 'No. 1 Slim Wallet — open, showing card capacity' }
     ],
     material: 'Full-grain vegetable-tanned leather, linen thread edge stitching, burnished natural edge',
     dimensions: { width_mm: 95, height_mm: 72, depth_mm: 6.2 },
@@ -29,8 +27,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 16500,
     currency: 'USD',
     images: [
-      { url: '/wallet_tall.png', alt: 'The Pluto Bi-Fold — Premium brown leather, upright view' },
-      { url: '/wallet_open.png', alt: 'The Pluto Bi-Fold — Premium open layout displaying cards' }
+      { url: '/pluto-1.png', alt: 'The Pluto Bi-Fold — Premium brown leather, upright view' },
+      { url: '/pluto-2.png', alt: 'The Pluto Bi-Fold — Premium open layout displaying cards' }
     ],
     material: 'Premium full-grain vegetable-tanned leather with soft satin lining',
     dimensions: { width_mm: 110, height_mm: 90, depth_mm: 12.0 },
@@ -47,8 +45,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 14500,
     currency: 'USD',
     images: [
-      { url: '/wallet_tall.png', alt: 'The Holly Compact — Geneva Brown front view' },
-      { url: '/wallet_open.png', alt: 'The Holly Compact — open view with card storage' }
+      { url: '/holly-1.png', alt: 'The Holly Compact — Geneva Brown front view' },
+      { url: '/holly-2.png', alt: 'The Holly Compact — open view with card storage' }
     ],
     material: 'Full-grain vegetable-tanned leather, heavy-duty waxed nylon stitching',
     dimensions: { width_mm: 105, height_mm: 80, depth_mm: 10.0 },
@@ -65,8 +63,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 19500,
     currency: 'USD',
     images: [
-      { url: '/wallet_tall.png', alt: 'The Rio Symmetrical — Geneva Brown standing front view' },
-      { url: '/wallet_open.png', alt: 'The Rio Symmetrical — internal layout and card slots' }
+      { url: '/rio-1.png', alt: 'The Rio Symmetrical — Geneva Brown standing front view' },
+      { url: '/rio-2.png', alt: 'The Rio Symmetrical — internal layout and card slots' }
     ],
     material: 'Durable top-tier aniline leather, hand-burnished edges, internal coin pocket lining',
     dimensions: { width_mm: 115, height_mm: 95, depth_mm: 14.0 },
@@ -83,8 +81,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 22000,
     currency: 'USD',
     images: [
-      { url: '/wallet_magic.png', alt: 'The Magic Folding Wallet — Midnight Black close-up with gold Ark Pelle emblem' },
-      { url: '/wallet_open.png', alt: 'The Magic Folding Wallet — inside folding layout' }
+      { url: '/magic-1.png', alt: 'The Magic Folding Wallet — Midnight Black close-up with gold Ark Pelle emblem' },
+      { url: '/magic-2.png', alt: 'The Magic Folding Wallet — inside folding layout' }
     ],
     material: 'Full-grain hide with German-engineered cross-elastic straps and quick-draw pull tabs',
     dimensions: { width_mm: 100, height_mm: 75, depth_mm: 8.5 },
@@ -101,8 +99,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 3500,
     currency: 'USD',
     images: [
-      { url: '/wax_main.png', alt: 'Nourishing Leather Wax — premium jar on dark fabric' },
-      { url: '/wax_detail.jpg', alt: 'Nourishing Leather Wax — dab on leather surface details' }
+      { url: '/wax-1.png', alt: 'Nourishing Leather Wax — premium jar on dark fabric' },
+      { url: '/wax-2.png', alt: 'Nourishing Leather Wax — dab on leather surface details' }
     ],
     material: 'Natural beeswax, organic seed oils, and premium shine-enhancing wax blend',
     dimensions: { width_mm: 60, height_mm: 60, depth_mm: 35.0 },

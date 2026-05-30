@@ -13,11 +13,32 @@ import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/hooks/useCart';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
-const FINISHES = [
-  { label: 'Dark Espresso', value: 'dark-espresso', available: true },
-  { label: 'Cognac Tan', value: 'cognac-tan', available: true },
-  { label: 'Jet Black', value: 'jet-black', available: true },
-];
+const PRODUCT_FINISHES: Record<string, { label: string; value: string; available: boolean }[]> = {
+  'no-1-slim-wallet': [
+    { label: 'Dark Espresso', value: 'dark-espresso', available: true },
+    { label: 'Cognac Tan', value: 'cognac-tan', available: true },
+    { label: 'Jet Black', value: 'jet-black', available: true },
+  ],
+  'pluto': [
+    { label: 'Geneva Brown', value: 'geneva-brown', available: true },
+    { label: 'Cognac Tan', value: 'cognac-tan', available: true },
+    { label: 'Jet Black', value: 'jet-black', available: true },
+  ],
+  'holly': [
+    { label: 'Geneva Brown', value: 'geneva-brown', available: true },
+    { label: 'Cognac Tan', value: 'cognac-tan', available: true },
+    { label: 'Jet Black', value: 'jet-black', available: true },
+  ],
+  'rio': [
+    { label: 'Geneva Brown', value: 'geneva-brown', available: true },
+    { label: 'Cognac Tan', value: 'cognac-tan', available: true },
+    { label: 'Jet Black', value: 'jet-black', available: true },
+  ],
+  'magic': [
+    { label: 'Midnight Black', value: 'midnight-black', available: true },
+  ],
+  'wax': [], // No finishes/variants for wax
+};
 
 interface ProductDetailClientProps {
   product: Product;
@@ -28,12 +49,19 @@ interface ProductDetailClientProps {
  * Separated from the server page to minimise client bundle size.
  */
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const [selectedFinish, setSelectedFinish] = useState(FINISHES[0]!.value);
+  const productFinishes = PRODUCT_FINISHES[product.slug] || [
+    { label: 'Dark Espresso', value: 'dark-espresso', available: true },
+    { label: 'Cognac Tan', value: 'cognac-tan', available: true },
+    { label: 'Jet Black', value: 'jet-black', available: true },
+  ];
+  const [selectedFinish, setSelectedFinish] = useState(
+    productFinishes.length > 0 ? productFinishes[0].value : 'default'
+  );
   const [isAdded, setIsAdded] = useState(false);
   const { addItem } = useCart();
   const shouldReduce = useReducedMotion();
 
-  const variant: OrderItemVariant = { finish: selectedFinish };
+  const variant: OrderItemVariant = productFinishes.length > 0 ? { finish: selectedFinish } : {};
   const displayPrice = formatPrice(product.price_cents, product.currency);
 
   function handleAddToCart() {
@@ -53,7 +81,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           {/* Eyebrow */}
           <div className="flex items-center gap-3 mb-5">
             <Tag>{product.material.split(',')[0]}</Tag>
-            <Tag>{product.card_capacity} Cards</Tag>
+            {product.card_capacity > 0 && <Tag>{product.card_capacity} Cards</Tag>}
           </div>
 
           {/* Name + price */}
@@ -76,14 +104,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </p>
 
           {/* Variant selector */}
-          <div className="mb-10">
-            <VariantSelector
-              label="Leather Finish"
-              variants={FINISHES}
-              value={selectedFinish}
-              onChange={setSelectedFinish}
-            />
-          </div>
+          {productFinishes.length > 0 && (
+            <div className="mb-10">
+              <VariantSelector
+                label="Leather Finish"
+                variants={productFinishes}
+                value={selectedFinish}
+                onChange={setSelectedFinish}
+              />
+            </div>
+          )}
 
           {/* Add to cart — desktop */}
           <div className="hidden lg:flex flex-col gap-3 mb-14">
