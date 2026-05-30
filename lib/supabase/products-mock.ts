@@ -29,10 +29,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 16500,
     currency: 'USD',
     images: [
-      { url: 'https://obipelle.com/cdn/shop/files/Pluto-Midnight-Black-f1.webp', alt: 'The Pluto Bi-Fold — Midnight Black close-up' },
-      { url: 'https://obipelle.com/cdn/shop/files/Pluto-Midnight-Black-f2.webp', alt: 'The Pluto Bi-Fold — interior details' },
-      { url: 'https://obipelle.com/cdn/shop/files/Pluto-GBF1.png', alt: 'The Pluto Bi-Fold — Geneva Brown detail' },
-      { url: 'https://obipelle.com/cdn/shop/files/Pluto-GBF2.png', alt: 'The Pluto Bi-Fold — open brown layout' }
+      { url: '/wallet_tall.png', alt: 'The Pluto Bi-Fold — Premium brown leather, upright view' },
+      { url: '/wallet_open.png', alt: 'The Pluto Bi-Fold — Premium open layout displaying cards' }
     ],
     material: 'Premium full-grain vegetable-tanned leather with soft satin lining',
     dimensions: { width_mm: 110, height_mm: 90, depth_mm: 12.0 },
@@ -49,8 +47,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 14500,
     currency: 'USD',
     images: [
-      { url: 'https://obipelle.com/cdn/shop/files/Holly-Geneva-Brown-f1.png', alt: 'The Holly Compact — Geneva Brown front view' },
-      { url: 'https://obipelle.com/cdn/shop/files/Holly-Midnight-Black-f1.webp', alt: 'The Holly Compact — Midnight Black front view' }
+      { url: '/wallet_tall.png', alt: 'The Holly Compact — Geneva Brown front view' },
+      { url: '/wallet_open.png', alt: 'The Holly Compact — open view with card storage' }
     ],
     material: 'Full-grain vegetable-tanned leather, heavy-duty waxed nylon stitching',
     dimensions: { width_mm: 105, height_mm: 80, depth_mm: 10.0 },
@@ -67,8 +65,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 19500,
     currency: 'USD',
     images: [
-      { url: 'https://obipelle.com/cdn/shop/files/Rio-GBF1.png', alt: 'The Rio Symmetrical — Geneva Brown front view' },
-      { url: 'https://obipelle.com/cdn/shop/files/Rio-Midnight-Black-f1.webp', alt: 'The Rio Symmetrical — Midnight Black front view' }
+      { url: '/wallet_tall.png', alt: 'The Rio Symmetrical — Geneva Brown standing front view' },
+      { url: '/wallet_open.png', alt: 'The Rio Symmetrical — internal layout and card slots' }
     ],
     material: 'Durable top-tier aniline leather, hand-burnished edges, internal coin pocket lining',
     dimensions: { width_mm: 115, height_mm: 95, depth_mm: 14.0 },
@@ -85,8 +83,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 22000,
     currency: 'USD',
     images: [
-      { url: 'https://obipelle.com/cdn/shop/files/Magic-Midnight-Black-1.webp', alt: 'The Magic Folding Wallet — Midnight Black close-up' },
-      { url: 'https://obipelle.com/cdn/shop/files/1_50680c9d-42e0-411b-ab3e-d0aebd4d6263.png', alt: 'The Magic Folding Wallet — Geneva Brown layout' }
+      { url: '/wallet_magic.png', alt: 'The Magic Folding Wallet — Midnight Black close-up with gold Ark Pelle emblem' },
+      { url: '/wallet_open.png', alt: 'The Magic Folding Wallet — inside folding layout' }
     ],
     material: 'Full-grain hide with German-engineered cross-elastic straps and quick-draw pull tabs',
     dimensions: { width_mm: 100, height_mm: 75, depth_mm: 8.5 },
@@ -103,7 +101,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price_cents: 3500,
     currency: 'USD',
     images: [
-      { url: 'https://obipelle.com/cdn/shop/files/Wax_01_1.webp', alt: 'Nourishing Leather Wax — premium care balm' }
+      { url: '/wax_main.png', alt: 'Nourishing Leather Wax — premium jar on dark fabric' },
+      { url: '/wax_detail.jpg', alt: 'Nourishing Leather Wax — dab on leather surface details' }
     ],
     material: 'Natural beeswax, organic seed oils, and premium shine-enhancing wax blend',
     dimensions: { width_mm: 60, height_mm: 60, depth_mm: 35.0 },
