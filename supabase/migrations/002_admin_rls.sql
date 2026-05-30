@@ -22,14 +22,10 @@ as $$
   select (
     auth.role() = 'authenticated'
     and (
-      -- Primary check: email in admin list
-      -- Add additional emails by extending this array.
-      auth.email() = any(
-        string_to_array(
-          coalesce(current_setting('app.admin_emails', true), 'admin@arkpelle.com'),
-          ','
-        )
-      )
+      -- Direct check of admin emails or user metadata role
+      auth.email() = 'arkpelle@gmail.com'
+      or auth.email() = 'admin@arkpelle.com'
+      or (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
     )
   );
 $$;
