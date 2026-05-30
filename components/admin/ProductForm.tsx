@@ -85,7 +85,6 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
                 name="name"
                 type="text"
                 required
-                defaultValue={product?.name}
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="e.g. The Rio Symmetrical"
