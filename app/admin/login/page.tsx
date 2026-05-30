@@ -41,9 +41,10 @@ export default function AdminLoginPage() {
       <div className="admin-login-card" style={styles.card}>
         {/* Logo mark */}
         <div style={styles.logoWrap}>
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-            <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="#B8934A" strokeWidth="1.5" fill="none"/>
-            <polygon points="18,9 27,13.5 27,22.5 18,27 9,22.5 9,13.5" fill="#B8934A" opacity="0.25"/>
+          <svg width="36" height="36" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+            <polygon points="23,28 37,15 37,85 23,72" fill="#B8934A" />
+            <polygon points="43,28 57,15 57,85 43,72" fill="#B8934A" />
+            <polygon points="63,28 77,15 77,85 63,72" fill="#B8934A" />
           </svg>
         </div>
 

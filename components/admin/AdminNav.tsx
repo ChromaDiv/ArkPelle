@@ -43,9 +43,10 @@ export default function AdminNav() {
           </svg>
         </button>
         <div className="admin-mobile-brand">
-          <svg width="20" height="20" viewBox="0 0 36 36" fill="none" style={{ marginRight: '6px' }}>
-            <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="#B8934A" strokeWidth="1.5" fill="none"/>
-            <polygon points="18,9 27,13.5 27,22.5 18,27 9,22.5 9,13.5" fill="#B8934A" opacity="0.22"/>
+          <svg width="20" height="20" viewBox="0 0 100 100" fill="none" style={{ marginRight: '6px' }}>
+            <polygon points="23,28 37,15 37,85 23,72" fill="#B8934A" />
+            <polygon points="43,28 57,15 57,85 43,72" fill="#B8934A" />
+            <polygon points="63,28 77,15 77,85 63,72" fill="#B8934A" />
           </svg>
           <span className="admin-mobile-title">Ark Pelle Admin</span>
         </div>
@@ -62,9 +63,10 @@ export default function AdminNav() {
         {/* Brand mark */}
         <div style={styles.brand}>
           <div style={styles.hexWrap} aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
-              <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="#B8934A" strokeWidth="1.5" fill="none"/>
-              <polygon points="18,9 27,13.5 27,22.5 18,27 9,22.5 9,13.5" fill="#B8934A" opacity="0.22"/>
+            <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+              <polygon points="23,28 37,15 37,85 23,72" fill="#B8934A" />
+              <polygon points="43,28 57,15 57,85 43,72" fill="#B8934A" />
+              <polygon points="63,28 77,15 77,85 63,72" fill="#B8934A" />
             </svg>
           </div>
           <div>

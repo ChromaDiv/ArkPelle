@@ -1,6 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" fill="none">
-  <!-- Outer brand hexagon polygon in Matte Gold (#B8934A) -->
-  <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="#B8934A" stroke-width="2" fill="none"/>
-  <!-- Inner brand nested filled hexagon with sophisticated opacity -->
-  <polygon points="18,9 27,13.5 27,22.5 18,27 9,22.5 9,13.5" fill="#B8934A" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Stripe 1 (Left) -->
+  <polygon points="23,28 37,15 37,85 23,72" fill="#8F753E" />
+  
+  <!-- Stripe 2 (Middle) -->
+  <polygon points="43,28 57,15 57,85 43,72" fill="#8F753E" />
+  
+  <!-- Stripe 3 (Right) -->
+  <polygon points="63,28 77,15 77,85 63,72" fill="#8F753E" />
 </svg>
