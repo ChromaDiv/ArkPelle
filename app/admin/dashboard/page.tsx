@@ -56,7 +56,7 @@ export default async function AdminDashboardPage() {
       <ProductTable products={products} />
 
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .admin-page-header {
             flex-direction: column;
             align-items: stretch !important;

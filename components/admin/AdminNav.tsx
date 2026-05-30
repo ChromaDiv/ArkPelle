@@ -172,7 +172,7 @@ export default function AdminNav() {
           overflow-y: auto;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .admin-mobile-header {
             display: flex;
           }

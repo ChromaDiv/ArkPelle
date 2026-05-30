@@ -44,7 +44,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
           padding: 2rem 2.5rem;
           overflow-x: auto;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .admin-shell { flex-direction: column; }
           .admin-main { padding: 1.25rem; }
         }

@@ -168,7 +168,7 @@ export default function ProductTable({ products }: ProductTableProps) {
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .admin-table-header {
             display: none !important;
           }
