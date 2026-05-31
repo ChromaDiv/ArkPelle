@@ -106,7 +106,7 @@ function parseProductForm(formData: FormData) {
     card_capacity, is_active, is_sold_out,
     dimensions: { width_mm, height_mm, depth_mm },
     images,
-    currency: 'USD',
+    currency: 'PKR',
   };
 }
 

@@ -70,7 +70,7 @@ export function computeCartTotals(items: CartItem[]): {
 } {
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
   const subtotalCents = items.reduce((sum, i) => sum + i.price_cents * i.quantity, 0);
-  const currency = items[0]?.currency ?? 'USD';
+  const currency = items[0]?.currency ?? 'PKR';
   return { itemCount, subtotalCents, currency };
 }
 

@@ -142,9 +142,9 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
             <div style={styles.inlineRow}>
               {/* Price */}
-              <FormField label="Price (USD)" htmlFor="field-price" required>
+              <FormField label="Price (PKR)" htmlFor="field-price" required>
                 <div style={styles.priceRow}>
-                  <span style={styles.priceCurrency}>$</span>
+                  <span style={styles.priceCurrency}>Rs.</span>
                   <input
                     id="field-price"
                     name="price"

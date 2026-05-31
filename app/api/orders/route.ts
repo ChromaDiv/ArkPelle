@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
       status: 'confirmed',
       total_cents: totalCents,
-      currency: currency ?? 'USD',
+      currency: currency ?? 'PKR',
       shipping_address: shippingAddress,
     })
     .select('id')

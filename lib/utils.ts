@@ -13,8 +13,8 @@ export function cn(...inputs: ClassValue[]): string {
  */
 export function formatPrice(
   cents: number,
-  currency: string = 'USD',
-  locale: string = 'en-US'
+  currency: string = 'PKR',
+  locale: string = 'en-PK'
 ): string {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
