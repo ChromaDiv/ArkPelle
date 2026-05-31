@@ -117,44 +117,57 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
           {/* Add to cart — desktop */}
           <div className="hidden lg:flex flex-col gap-3 mb-14">
-            <AnimatePresence mode="wait">
-              {isAdded ? (
-                <motion.div
-                  key="added"
-                  initial={{ opacity: 0, y: shouldReduce ? 0 : 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: shouldReduce ? 0 : -8 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex items-center gap-3 py-4 border border-[var(--color-gold-dim)] text-[var(--color-gold)] justify-center"
-                  role="status"
-                  aria-live="polite"
-                >
-                  <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
-                    <path d="M1 6L6 11L15 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span className="font-body text-xs tracking-[0.2em] uppercase">Added to Bag</span>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="add"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Button
-                    id="add-to-cart-desktop"
-                    variant="primary"
-                    size="lg"
-                    onClick={handleAddToCart}
-                    className="w-full"
-                    aria-label={`Add ${product.name} to cart`}
+            {product.is_sold_out ? (
+              <Button
+                id="add-to-cart-desktop"
+                variant="primary"
+                size="lg"
+                className="w-full opacity-40 cursor-not-allowed pointer-events-none"
+                disabled
+                aria-label={`${product.name} is Sold Out`}
+              >
+                Sold Out
+              </Button>
+            ) : (
+              <AnimatePresence mode="wait">
+                {isAdded ? (
+                  <motion.div
+                    key="added"
+                    initial={{ opacity: 0, y: shouldReduce ? 0 : 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: shouldReduce ? 0 : -8 }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex items-center gap-3 py-4 border border-[var(--color-gold-dim)] text-[var(--color-gold)] justify-center"
+                    role="status"
+                    aria-live="polite"
                   >
-                    Add to Bag — {displayPrice}
-                  </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+                      <path d="M1 6L6 11L15 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span className="font-body text-xs tracking-[0.2em] uppercase">Added to Bag</span>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="add"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Button
+                      id="add-to-cart-desktop"
+                      variant="primary"
+                      size="lg"
+                      onClick={handleAddToCart}
+                      className="w-full"
+                      aria-label={`Add ${product.name} to cart`}
+                    >
+                      Add to Bag — {displayPrice}
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
 
             <p className="font-body text-xs text-[var(--color-ink-muted)] text-center tracking-[0.08em]">
               Free shipping on all orders. 30-day returns.

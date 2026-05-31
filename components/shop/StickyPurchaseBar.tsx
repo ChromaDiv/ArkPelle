@@ -68,43 +68,56 @@ export default function StickyPurchaseBar({
               {itemCount} in bag
             </span>
           )}
-          <AnimatePresence mode="wait">
-            {isAdded ? (
-              <motion.div
-                key="added"
-                initial={{ opacity: 0, scale: shouldReduce ? 1 : 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: shouldReduce ? 1 : 0.95 }}
-                transition={{ duration: 0.3 }}
-                className="flex items-center gap-2 px-8 py-3 border border-[var(--color-gold-dim)] text-[var(--color-gold)]"
-                role="status"
-                aria-live="polite"
-              >
-                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
-                  <path d="M1 5L5.5 9.5L13 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span className="font-body text-xs tracking-[0.15em] uppercase">Added</span>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="add"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Button
-                  id="add-to-cart-btn"
-                  variant="primary"
-                  size="md"
-                  onClick={handleAddToCart}
-                  aria-label={`Add ${product.name} to cart`}
+          {product.is_sold_out ? (
+            <Button
+              id="add-to-cart-btn"
+              variant="primary"
+              size="md"
+              className="opacity-40 cursor-not-allowed pointer-events-none"
+              disabled
+              aria-label={`${product.name} is Sold Out`}
+            >
+              Sold Out
+            </Button>
+          ) : (
+            <AnimatePresence mode="wait">
+              {isAdded ? (
+                <motion.div
+                  key="added"
+                  initial={{ opacity: 0, scale: shouldReduce ? 1 : 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: shouldReduce ? 1 : 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center gap-2 px-8 py-3 border border-[var(--color-gold-dim)] text-[var(--color-gold)]"
+                  role="status"
+                  aria-live="polite"
                 >
-                  Add to Bag
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+                    <path d="M1 5L5.5 9.5L13 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span className="font-body text-xs tracking-[0.15em] uppercase">Added</span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="add"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Button
+                    id="add-to-cart-btn"
+                    variant="primary"
+                    size="md"
+                    onClick={handleAddToCart}
+                    aria-label={`Add ${product.name} to cart`}
+                  >
+                    Add to Bag
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
         </div>
       </div>
     </motion.div>

@@ -16,6 +16,8 @@ export const MOCK_PRODUCTS: Product[] = [
     dimensions: { width_mm: 95, height_mm: 72, depth_mm: 6.2 },
     card_capacity: 6,
     is_active: true,
+    is_sold_out: false,
+    display_order: 0,
     collection_id: null,
     created_at: '2026-05-30T00:00:00Z'
   },
@@ -34,6 +36,8 @@ export const MOCK_PRODUCTS: Product[] = [
     dimensions: { width_mm: 110, height_mm: 90, depth_mm: 12.0 },
     card_capacity: 8,
     is_active: true,
+    is_sold_out: false,
+    display_order: 1,
     collection_id: null,
     created_at: '2026-05-30T00:01:00Z'
   },
@@ -52,6 +56,8 @@ export const MOCK_PRODUCTS: Product[] = [
     dimensions: { width_mm: 105, height_mm: 80, depth_mm: 10.0 },
     card_capacity: 6,
     is_active: true,
+    is_sold_out: false,
+    display_order: 2,
     collection_id: null,
     created_at: '2026-05-30T00:02:00Z'
   },
@@ -70,6 +76,8 @@ export const MOCK_PRODUCTS: Product[] = [
     dimensions: { width_mm: 115, height_mm: 95, depth_mm: 14.0 },
     card_capacity: 8,
     is_active: true,
+    is_sold_out: false,
+    display_order: 3,
     collection_id: null,
     created_at: '2026-05-30T00:03:00Z'
   },
@@ -88,6 +96,8 @@ export const MOCK_PRODUCTS: Product[] = [
     dimensions: { width_mm: 100, height_mm: 75, depth_mm: 8.5 },
     card_capacity: 10,
     is_active: true,
+    is_sold_out: false,
+    display_order: 4,
     collection_id: null,
     created_at: '2026-05-30T00:04:00Z'
   },
@@ -106,6 +116,8 @@ export const MOCK_PRODUCTS: Product[] = [
     dimensions: { width_mm: 60, height_mm: 60, depth_mm: 35.0 },
     card_capacity: 0,
     is_active: true,
+    is_sold_out: false,
+    display_order: 5,
     collection_id: null,
     created_at: '2026-05-30T00:05:00Z'
   }

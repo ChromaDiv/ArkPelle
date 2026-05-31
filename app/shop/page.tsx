@@ -32,6 +32,7 @@ export default async function ShopPage() {
         .from('products')
         .select('*')
         .eq('is_active', true)
+        .order('display_order', { ascending: true })
         .order('created_at', { ascending: false });
 
       if (products && products.length > 0) {

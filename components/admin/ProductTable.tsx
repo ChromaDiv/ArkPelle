@@ -1,10 +1,11 @@
 'use client';
 
-import { useOptimistic, useTransition } from 'react';
+import { useTransition, useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { formatPrice } from '@/lib/utils';
-import { deleteProduct, restoreProduct } from '@/app/actions/products';
+import { deleteProduct, restoreProduct, reorderProducts } from '@/app/actions/products';
 import type { Product } from '@/lib/supabase/types';
 import StatusBadge from './StatusBadge';
 
@@ -12,46 +13,141 @@ interface ProductTableProps {
   products: Product[];
 }
 
-type OptimisticAction =
-  | { type: 'delete'; id: string }
-  | { type: 'restore'; id: string };
-
-function applyOptimistic(products: Product[], action: OptimisticAction): Product[] {
-  if (action.type === 'delete') {
-    return products.map(p =>
-      p.id === action.id ? { ...p, is_active: false } : p
-    );
-  }
-  if (action.type === 'restore') {
-    return products.map(p =>
-      p.id === action.id ? { ...p, is_active: true } : p
-    );
-  }
-  return products;
-}
-
 export default function ProductTable({ products }: ProductTableProps) {
-  const [optimisticProducts, addOptimistic] = useOptimistic(products, applyOptimistic);
+  const [localProducts, setLocalProducts] = useState<Product[]>(products);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  // Keep local products in sync with server component props (e.g. after adding or archiving)
+  useEffect(() => {
+    setLocalProducts(products);
+  }, [products]);
+
+  // Handle soft delete (archive)
   const handleDelete = (id: string) => {
     startTransition(async () => {
-      addOptimistic({ type: 'delete', id });
-      await deleteProduct(id);
+      // Optimistic state update
+      setLocalProducts(prev =>
+        prev.map(p => p.id === id ? { ...p, is_active: false } : p)
+      );
+      const res = await deleteProduct(id);
+      if (res?.error) {
+        // Revert on error
+        setLocalProducts(products);
+        alert(`Failed to archive product: ${res.error}`);
+      }
     });
   };
 
+  // Handle restore (reactivate)
   const handleRestore = (id: string) => {
     startTransition(async () => {
-      addOptimistic({ type: 'restore', id });
-      await restoreProduct(id);
+      // Optimistic state update
+      setLocalProducts(prev =>
+        prev.map(p => p.id === id ? { ...p, is_active: true } : p)
+      );
+      const res = await restoreProduct(id);
+      if (res?.error) {
+        // Revert on error
+        setLocalProducts(products);
+        alert(`Failed to restore product: ${res.error}`);
+      }
     });
+  };
+
+  // Handle click-to-reorder (up/down arrows)
+  const handleMove = async (index: number, direction: 'up' | 'down') => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= localProducts.length) return;
+
+    const newProducts = [...localProducts];
+    const [movedItem] = newProducts.splice(index, 1);
+    newProducts.splice(newIndex, 0, movedItem);
+
+    // Optimistic reorder
+    const originalProducts = [...localProducts];
+    setLocalProducts(newProducts);
+    setIsSavingOrder(true);
+
+    const orderedIds = newProducts.map(p => p.id);
+    const result = await reorderProducts(orderedIds);
+    setIsSavingOrder(false);
+
+    if (result?.error) {
+      // Rollback on server failure
+      setLocalProducts(originalProducts);
+      alert(`Failed to save new product order: ${result.error}`);
+    }
+  };
+
+  // HTML5 Drag & Drop state refs
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    dragItem.current = index;
+    e.dataTransfer.effectAllowed = 'move';
+    // Style the drag ghost a bit if needed
+    e.currentTarget.classList.add('dragging');
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    dragOverItem.current = index;
+  };
+
+  const handleDragEnd = async (e: React.DragEvent) => {
+    e.currentTarget.classList.remove('dragging');
+
+    if (
+      dragItem.current === null ||
+      dragOverItem.current === null ||
+      dragItem.current === dragOverItem.current
+    ) {
+      dragItem.current = null;
+      dragOverItem.current = null;
+      return;
+    }
+
+    const index = dragItem.current;
+    const newIndex = dragOverItem.current;
+
+    const newProducts = [...localProducts];
+    const [movedItem] = newProducts.splice(index, 1);
+    newProducts.splice(newIndex, 0, movedItem);
+
+    // Optimistic drag reorder
+    const originalProducts = [...localProducts];
+    setLocalProducts(newProducts);
+    setIsSavingOrder(true);
+
+    const orderedIds = newProducts.map(p => p.id);
+    const result = await reorderProducts(orderedIds);
+    setIsSavingOrder(false);
+
+    if (result?.error) {
+      // Rollback
+      setLocalProducts(originalProducts);
+      alert(`Failed to save new product order: ${result.error}`);
+    }
+
+    dragItem.current = null;
+    dragOverItem.current = null;
   };
 
   return (
     <div style={styles.root}>
+      {/* Saving banner */}
+      {isSavingOrder && (
+        <div style={styles.savingBar}>
+          <span style={styles.spinnerSm} aria-hidden="true" />
+          <span>Arrangement order saving…</span>
+        </div>
+      )}
+
       {/* Header row */}
       <div className="admin-table-header" style={styles.tableHeader}>
+        <div style={styles.col_drag_hdr} />
         <div style={styles.col_thumb} />
         <div style={styles.col_name}>Product</div>
         <div style={styles.col_price}>Price</div>
@@ -61,7 +157,7 @@ export default function ProductTable({ products }: ProductTableProps) {
 
       {/* Body */}
       <div style={styles.tableBody}>
-        {optimisticProducts.length === 0 && (
+        {localProducts.length === 0 && (
           <div style={styles.empty}>
             <p style={{ color: '#5A5048', fontSize: '0.875rem' }}>
               No products yet. Add your first one.
@@ -69,17 +165,66 @@ export default function ProductTable({ products }: ProductTableProps) {
           </div>
         )}
 
-        {optimisticProducts.map((product) => (
-          <div
+        {localProducts.map((product, index) => (
+          <motion.div
             key={product.id}
+            layout
+            draggable
             id={`product-row-${product.id}`}
             className="admin-table-row"
             style={{
               ...styles.row,
               opacity: !product.is_active ? 0.5 : 1,
-              transition: 'opacity 0.4s ease',
+              transition: 'opacity 0.4s ease, border-color 0.2s',
             }}
+            {...{
+              onDragStart: (e: React.DragEvent) => handleDragStart(e, index),
+              onDragOver: (e: React.DragEvent) => handleDragOver(e, index),
+              onDragEnd: handleDragEnd
+            } as any}
           >
+            {/* Reorder drag handle & arrows */}
+            <div className="admin-col-drag" style={styles.col_drag}>
+              <div style={styles.dragHandle} title="Drag to rearrange">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="9" cy="5" r="1"/>
+                  <circle cx="9" cy="12" r="1"/>
+                  <circle cx="9" cy="19" r="1"/>
+                  <circle cx="15" cy="5" r="1"/>
+                  <circle cx="15" cy="12" r="1"/>
+                  <circle cx="15" cy="19" r="1"/>
+                </svg>
+              </div>
+              <div style={styles.quickOrder} className="admin-quick-reorder">
+                <button
+                  type="button"
+                  onClick={() => handleMove(index, 'up')}
+                  disabled={index === 0 || isSavingOrder}
+                  style={{
+                    ...styles.quickBtn,
+                    opacity: index === 0 ? 0.25 : 1,
+                  }}
+                  title="Move Up"
+                  aria-label={`Move ${product.name} up`}
+                >
+                  ▲
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleMove(index, 'down')}
+                  disabled={index === localProducts.length - 1 || isSavingOrder}
+                  style={{
+                    ...styles.quickBtn,
+                    opacity: index === localProducts.length - 1 ? 0.25 : 1,
+                  }}
+                  title="Move Down"
+                  aria-label={`Move ${product.name} down`}
+                >
+                  ▼
+                </button>
+              </div>
+            </div>
+
             {/* Thumbnail */}
             <div className="admin-col-thumb" style={styles.col_thumb}>
               <div style={styles.thumb}>
@@ -97,9 +242,14 @@ export default function ProductTable({ products }: ProductTableProps) {
               </div>
             </div>
 
-            {/* Name + slug */}
+            {/* Name + Slug + Sold Out label */}
             <div className="admin-col-name" style={styles.col_name}>
-              <span style={styles.productName}>{product.name}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <span style={styles.productName}>{product.name}</span>
+                {product.is_sold_out && (
+                  <span style={styles.soldOutBadge}>Sold Out</span>
+                )}
+              </div>
               <span style={styles.productSlug}>/shop/{product.slug}</span>
             </div>
 
@@ -137,7 +287,7 @@ export default function ProductTable({ products }: ProductTableProps) {
                   onClick={() => handleDelete(product.id)}
                   disabled={isPending}
                   style={{ ...styles.actionBtn, ...styles.archiveBtn }}
-                  title="Archive product (set inactive)"
+                  title="Archive product"
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="21 8 21 21 3 21 3 8"/>
@@ -153,7 +303,7 @@ export default function ProductTable({ products }: ProductTableProps) {
                   onClick={() => handleRestore(product.id)}
                   disabled={isPending}
                   style={{ ...styles.actionBtn, ...styles.restoreBtn }}
-                  title="Restore product (set active)"
+                  title="Restore product"
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="1 4 1 10 7 10"/>
@@ -163,43 +313,60 @@ export default function ProductTable({ products }: ProductTableProps) {
                 </button>
               )}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       <style>{`
+        .admin-table-row:hover {
+          background: rgba(184, 147, 74, 0.02) !important;
+          border-color: rgba(184, 147, 74, 0.15) !important;
+        }
+        .admin-table-row.dragging {
+          opacity: 0.3 !important;
+          background: rgba(184, 147, 74, 0.05) !important;
+          border-color: rgba(184, 147, 74, 0.3) !important;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         @media (max-width: 1024px) {
           .admin-table-header {
             display: none !important;
           }
           .admin-table-row {
-            grid-template-columns: 56px 1fr !important;
+            grid-template-columns: 40px 56px 1fr !important;
             grid-template-rows: auto auto auto auto !important;
             gap: 0.5rem !important;
             padding: 1.25rem 1rem !important;
             border-bottom: 1px solid rgba(184, 147, 74, 0.1) !important;
             align-items: start !important;
           }
-          .admin-col-thumb {
+          .admin-col-drag {
             grid-column: 1 / 2;
-            grid-row: 1 / 2;
+            grid-row: 1 / 3;
+            margin-top: 0.25rem;
+            display: flex !important;
+          }
+          .admin-col-thumb {
+            grid-column: 2 / 3;
+            grid-row: 1 / 3;
           }
           .admin-col-name {
-            grid-column: 2 / 3;
+            grid-column: 3 / 4;
             grid-row: 1 / 2;
           }
           .admin-col-price {
-            grid-column: 2 / 3;
+            grid-column: 3 / 4;
             grid-row: 2 / 3;
             margin-top: 0.15rem;
           }
           .admin-col-status {
-            grid-column: 2 / 3;
+            grid-column: 3 / 4;
             grid-row: 3 / 4;
             margin-top: 0.25rem;
           }
           .admin-col-actions {
-            grid-column: 1 / 3;
+            grid-column: 1 / 4;
             grid-row: 4 / 5;
             display: flex !important;
             justify-content: flex-start !important;
@@ -211,8 +378,12 @@ export default function ProductTable({ products }: ProductTableProps) {
           .admin-col-actions button {
             flex: 1;
             justify-content: center !important;
-            padding: 0.75rem 0.5rem !important; /* Premium finger-friendly touch target */
+            padding: 0.75rem 0.5rem !important;
             font-size: 0.7rem !important;
+          }
+          .admin-quick-reorder {
+            flex-direction: row !important;
+            gap: 0.35rem !important;
           }
         }
       `}</style>
@@ -227,9 +398,31 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: 'hidden',
     background: 'rgba(26, 20, 16, 0.5)',
   },
+  savingBar: {
+    background: 'rgba(184, 147, 74, 0.08)',
+    borderBottom: '1px solid rgba(184, 147, 74, 0.15)',
+    padding: '0.65rem 1.25rem',
+    color: '#B8934A',
+    fontSize: '0.7rem',
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
+    fontWeight: 500,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  spinnerSm: {
+    width: '12px',
+    height: '12px',
+    border: '2px solid rgba(184, 147, 74, 0.2)',
+    borderTopColor: '#B8934A',
+    borderRadius: '50%',
+    animation: 'spin 0.8s linear infinite',
+    display: 'inline-block',
+  },
   tableHeader: {
     display: 'grid',
-    gridTemplateColumns: '56px 1fr 120px 90px 180px',
+    gridTemplateColumns: '40px 56px 1fr 120px 90px 180px',
     gap: '1rem',
     padding: '0.75rem 1.25rem',
     background: 'rgba(14, 10, 7, 0.4)',
@@ -242,18 +435,53 @@ const styles: Record<string, React.CSSProperties> = {
   },
   row: {
     display: 'grid',
-    gridTemplateColumns: '56px 1fr 120px 90px 180px',
+    gridTemplateColumns: '40px 56px 1fr 120px 90px 180px',
     gap: '1rem',
     padding: '0.875rem 1.25rem',
     alignItems: 'center',
     borderBottom: '1px solid rgba(184, 147, 74, 0.07)',
-    transition: 'background 0.2s',
+    background: 'rgba(26, 20, 16, 0.2)',
   },
   empty: {
     padding: '3rem 1.5rem',
     textAlign: 'center',
   },
-  // Column labels
+  col_drag_hdr: {
+    width: '40px',
+  },
+  col_drag: {
+    width: '40px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.35rem',
+    userSelect: 'none',
+  },
+  dragHandle: {
+    cursor: 'grab',
+    color: '#3A3028',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '0.1rem',
+    transition: 'color 0.2s',
+  },
+  quickOrder: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+  },
+  quickBtn: {
+    background: 'transparent',
+    border: 'none',
+    color: '#5A5048',
+    fontSize: '0.5rem',
+    cursor: 'pointer',
+    padding: '2px 4px',
+    lineHeight: 1,
+    transition: 'color 0.2s, background 0.2s',
+  },
   col_thumb: {
     fontSize: '0.6rem',
     letterSpacing: '0.15em',
@@ -291,7 +519,6 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'flex-end',
     gap: '0.5rem',
   },
-  // Cell content
   thumb: {
     width: '48px',
     height: '48px',
@@ -314,6 +541,17 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#EDE8E0',
     fontWeight: 400,
     lineHeight: 1.3,
+  },
+  soldOutBadge: {
+    fontSize: '0.55rem',
+    letterSpacing: '0.08em',
+    color: '#E57373',
+    border: '1px solid rgba(229, 115, 115, 0.3)',
+    borderRadius: '2px',
+    padding: '0.1rem 0.35rem',
+    textTransform: 'uppercase',
+    fontWeight: 500,
+    background: 'rgba(229, 115, 115, 0.03)',
   },
   productSlug: {
     fontSize: '0.7rem',

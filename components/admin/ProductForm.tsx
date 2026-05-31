@@ -37,6 +37,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   const [slug, setSlug] = useState(product?.slug ?? '');
   const [slugManual, setSlugManual] = useState(false);
   const [isActive, setIsActive] = useState(product?.is_active ?? true);
+  const [isSoldOut, setIsSoldOut] = useState(product?.is_sold_out ?? false);
   const [images, setImages] = useState<UploadedImage[]>(
     (product?.images ?? []).map(img => ({ url: img.url, alt: img.alt }))
   );
@@ -172,34 +173,75 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
               </FormField>
             </div>
 
-            {/* Status toggle */}
-            <FormField label="Status" htmlFor="field-status">
-              <div style={styles.statusRow}>
-                <button
-                  type="button"
-                  id="field-status"
-                  onClick={() => setIsActive(v => !v)}
-                  style={{
-                    ...styles.toggleBtn,
-                    background: isActive
-                      ? 'rgba(76, 175, 80, 0.1)'
-                      : 'rgba(138, 128, 120, 0.1)',
-                    borderColor: isActive
-                      ? 'rgba(76, 175, 80, 0.3)'
-                      : 'rgba(138, 128, 120, 0.2)',
-                  }}
-                  aria-pressed={isActive}
-                >
+            {/* Status & Inventory toggles */}
+            <div style={styles.inlineRow}>
+              {/* Status toggle */}
+              <FormField label="Status" htmlFor="field-status">
+                <div style={styles.statusRow}>
+                  <button
+                    type="button"
+                    id="field-status"
+                    onClick={() => setIsActive(v => !v)}
+                    style={{
+                      ...styles.toggleBtn,
+                      background: isActive
+                        ? 'rgba(76, 175, 80, 0.1)'
+                        : 'rgba(138, 128, 120, 0.1)',
+                      borderColor: isActive
+                        ? 'rgba(76, 175, 80, 0.3)'
+                        : 'rgba(138, 128, 120, 0.2)',
+                    }}
+                    aria-pressed={isActive}
+                  >
+                    <span style={{
+                      ...styles.toggleDot,
+                      background: isActive ? '#81C784' : '#5A5048',
+                      transform: isActive ? 'translateX(18px)' : 'translateX(0)',
+                    }} />
+                  </button>
+                  <StatusBadge isActive={isActive} size="md" />
+                  <input type="hidden" name="is_active" value={isActive ? 'true' : 'false'} />
+                </div>
+              </FormField>
+
+              {/* Sold Out toggle */}
+              <FormField label="Inventory" htmlFor="field-sold-out">
+                <div style={styles.statusRow}>
+                  <button
+                    type="button"
+                    id="field-sold-out"
+                    onClick={() => setIsSoldOut(v => !v)}
+                    style={{
+                      ...styles.toggleBtn,
+                      background: isSoldOut
+                        ? 'rgba(229, 115, 115, 0.1)'
+                        : 'rgba(138, 128, 120, 0.1)',
+                      borderColor: isSoldOut
+                        ? 'rgba(229, 115, 115, 0.3)'
+                        : 'rgba(138, 128, 120, 0.2)',
+                    }}
+                    aria-pressed={isSoldOut}
+                  >
+                    <span style={{
+                      ...styles.toggleDot,
+                      background: isSoldOut ? '#E57373' : '#5A5048',
+                      transform: isSoldOut ? 'translateX(18px)' : 'translateX(0)',
+                    }} />
+                  </button>
                   <span style={{
-                    ...styles.toggleDot,
-                    background: isActive ? '#81C784' : '#5A5048',
-                    transform: isActive ? 'translateX(18px)' : 'translateX(0)',
-                  }} />
-                </button>
-                <StatusBadge isActive={isActive} size="md" />
-                <input type="hidden" name="is_active" value={isActive ? 'true' : 'false'} />
-              </div>
-            </FormField>
+                    fontSize: '0.75rem',
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: isSoldOut ? '#E57373' : '#8A8078',
+                    paddingTop: '2px'
+                  }}>
+                    {isSoldOut ? 'Sold Out' : 'In Stock'}
+                  </span>
+                  <input type="hidden" name="is_sold_out" value={isSoldOut ? 'true' : 'false'} />
+                </div>
+              </FormField>
+            </div>
           </section>
 
           {/* ── Dimensions ── */}

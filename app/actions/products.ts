@@ -47,6 +47,7 @@ export async function getAdminProducts(): Promise<Product[]> {
   const { data, error } = await (supabase as any)
     .from('products')
     .select('*')
+    .order('display_order', { ascending: true })
     .order('created_at', { ascending: false });
 
   if (error || !data) {
@@ -88,6 +89,7 @@ function parseProductForm(formData: FormData) {
   const material = (formData.get('material') as string).trim();
   const card_capacity = parseInt(formData.get('card_capacity') as string, 10) || 0;
   const is_active = formData.get('is_active') === 'true';
+  const is_sold_out = formData.get('is_sold_out') === 'true';
   const width_mm = parseFloat(formData.get('width_mm') as string) || 0;
   const height_mm = parseFloat(formData.get('height_mm') as string) || 0;
   const depth_mm = parseFloat(formData.get('depth_mm') as string) || 0;
@@ -101,7 +103,7 @@ function parseProductForm(formData: FormData) {
 
   return {
     name, slug, description, price_cents, material,
-    card_capacity, is_active,
+    card_capacity, is_active, is_sold_out,
     dimensions: { width_mm, height_mm, depth_mm },
     images,
     currency: 'USD',
@@ -120,10 +122,26 @@ export async function createProduct(formData: FormData) {
     redirect('/admin/dashboard');
   }
 
+  // Fetch the current max display_order to append this product at the end
+  let display_order = 0;
+  try {
+    const { data } = await (supabase as any)
+      .from('products')
+      .select('display_order')
+      .order('display_order', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (data) {
+      display_order = (data.display_order ?? 0) + 1;
+    }
+  } catch (err) {
+    console.error('Failed to fetch max display_order:', err);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
     .from('products')
-    .insert(fields);
+    .insert({ ...fields, display_order });
 
   if (error) {
     // Return error to the form rather than throwing
@@ -275,4 +293,36 @@ export async function uploadProductImage(formData: FormData): Promise<{ url?: st
     .getPublicUrl(data.path);
 
   return { url: urlData.publicUrl };
+}
+
+// ─── REORDER ─────────────────────────────────────────────────────────────────
+
+export async function reorderProducts(orderedIds: string[]): Promise<{ success?: boolean; error?: string }> {
+  if (!isSupabaseConfigured()) {
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/shop');
+    return { success: true };
+  }
+
+  const { supabase } = await requireAdmin();
+
+  // Perform updates in parallel
+  const promises = orderedIds.map((id, index) =>
+    (supabase as any)
+      .from('products')
+      .update({ display_order: index })
+      .eq('id', id)
+  );
+
+  const results = await Promise.all(promises);
+  const firstError = results.find(r => r.error);
+
+  if (firstError) {
+    console.error('reorderProducts error:', firstError.error);
+    return { error: firstError.error.message };
+  }
+
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/shop');
+  return { success: true };
 }

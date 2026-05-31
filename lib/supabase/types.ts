@@ -42,6 +42,8 @@ export interface Product {
   dimensions: ProductDimensions;
   card_capacity: number;
   is_active: boolean;
+  is_sold_out: boolean;
+  display_order: number;
   collection_id: string | null;
   created_at: string;
 }
@@ -108,6 +110,8 @@ export type Database = {
           dimensions?: ProductDimensions;
           card_capacity: number;
           is_active?: boolean;
+          is_sold_out?: boolean;
+          display_order?: number;
           collection_id?: string | null;
           created_at?: string;
         };
@@ -122,6 +126,8 @@ export type Database = {
           dimensions: ProductDimensions;
           card_capacity: number;
           is_active: boolean;
+          is_sold_out: boolean;
+          display_order: number;
           collection_id: string | null;
         }>;
         Relationships: [];
