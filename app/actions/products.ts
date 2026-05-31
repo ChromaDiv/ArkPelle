@@ -90,6 +90,7 @@ function parseProductForm(formData: FormData) {
   const card_capacity = parseInt(formData.get('card_capacity') as string, 10) || 0;
   const is_active = formData.get('is_active') === 'true';
   const is_sold_out = formData.get('is_sold_out') === 'true';
+  const discount_percent = Math.min(99, Math.max(0, parseInt(formData.get('discount_percent') as string, 10) || 0));
   const width_mm = parseFloat(formData.get('width_mm') as string) || 0;
   const height_mm = parseFloat(formData.get('height_mm') as string) || 0;
   const depth_mm = parseFloat(formData.get('depth_mm') as string) || 0;
@@ -103,7 +104,7 @@ function parseProductForm(formData: FormData) {
 
   return {
     name, slug, description, price_cents, material,
-    card_capacity, is_active, is_sold_out,
+    card_capacity, is_active, is_sold_out, discount_percent,
     dimensions: { width_mm, height_mm, depth_mm },
     images,
     currency: 'PKR',

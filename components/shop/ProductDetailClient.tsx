@@ -62,7 +62,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const shouldReduce = useReducedMotion();
 
   const variant: OrderItemVariant = productFinishes.length > 0 ? { finish: selectedFinish } : {};
-  const displayPrice = formatPrice(product.price_cents, product.currency);
+  const hasDiscount = product.discount_percent > 0;
+  const discountedPriceCents = hasDiscount
+    ? Math.round(product.price_cents * (1 - product.discount_percent / 100))
+    : product.price_cents;
+  const displayPrice = formatPrice(discountedPriceCents, product.currency);
+  const displayOriginalPrice = formatPrice(product.price_cents, product.currency);
 
   function handleAddToCart() {
     addItem(product, 1, variant);
@@ -92,9 +97,23 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             {product.name}
           </h1>
 
-          <p className="font-body text-2xl font-light text-[var(--color-gold)] mb-6">
-            {displayPrice}
-          </p>
+          {hasDiscount ? (
+            <div className="flex items-baseline gap-4 mb-6">
+              <span className="font-body text-2xl font-light text-[var(--color-gold)]">
+                {displayPrice}
+              </span>
+              <span className="font-body text-lg line-through text-[var(--color-ink-muted)]">
+                {displayOriginalPrice}
+              </span>
+              <span className="font-display text-[9px] tracking-[0.15em] uppercase text-[#EDE8E0] bg-[#B8934A] px-2.5 py-0.5 rounded-[2px] font-semibold">
+                {product.discount_percent}% OFF
+              </span>
+            </div>
+          ) : (
+            <p className="font-body text-2xl font-light text-[var(--color-gold)] mb-6">
+              {displayPrice}
+            </p>
+          )}
 
           <GoldRule className="mb-8 max-w-[5rem]" />
 

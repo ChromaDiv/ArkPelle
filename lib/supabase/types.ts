@@ -44,6 +44,7 @@ export interface Product {
   is_active: boolean;
   is_sold_out: boolean;
   display_order: number;
+  discount_percent: number;
   collection_id: string | null;
   created_at: string;
 }
@@ -112,6 +113,7 @@ export type Database = {
           is_active?: boolean;
           is_sold_out?: boolean;
           display_order?: number;
+          discount_percent?: number;
           collection_id?: string | null;
           created_at?: string;
         };
@@ -128,6 +130,7 @@ export type Database = {
           is_active: boolean;
           is_sold_out: boolean;
           display_order: number;
+          discount_percent: number;
           collection_id: string | null;
         }>;
         Relationships: [];

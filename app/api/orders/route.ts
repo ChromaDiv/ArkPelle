@@ -14,7 +14,7 @@ interface CreateOrderBody {
   currency: string;
 }
 
-type ProductRow = Pick<Product, 'id' | 'price_cents' | 'is_active'>;
+type ProductRow = Pick<Product, 'id' | 'price_cents' | 'is_active' | 'discount_percent'>;
 
 /**
  * POST /api/orders
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: rawProducts, error: productsError } = await (supabase as any)
     .from('products')
-    .select('id, price_cents, is_active')
+    .select('id, price_cents, is_active, discount_percent')
     .in('id', productIds);
 
   const products = (rawProducts ?? []) as unknown as ProductRow[];
@@ -81,7 +81,12 @@ export async function POST(request: NextRequest) {
   // 4. Compute authoritative total
   const totalCents = items.reduce((sum, item) => {
     const product = productMap.get(item.productId);
-    return sum + (product?.price_cents ?? 0) * item.quantity;
+    if (!product) return sum;
+    const hasDiscount = (product.discount_percent ?? 0) > 0;
+    const itemPrice = hasDiscount
+      ? Math.round(product.price_cents * (1 - product.discount_percent / 100))
+      : product.price_cents;
+    return sum + itemPrice * item.quantity;
   }, 0);
 
   // 5. Insert order
@@ -106,13 +111,20 @@ export async function POST(request: NextRequest) {
   }
 
   // 6. Insert order items
-  const orderItems = items.map((item) => ({
-    order_id: order.id,
-    product_id: item.productId,
-    quantity: item.quantity,
-    unit_price_cents: productMap.get(item.productId)!.price_cents,
-    variant: item.variant,
-  }));
+  const orderItems = items.map((item) => {
+    const dbProduct = productMap.get(item.productId)!;
+    const hasDiscount = (dbProduct.discount_percent ?? 0) > 0;
+    const unitPriceCents = hasDiscount
+      ? Math.round(dbProduct.price_cents * (1 - dbProduct.discount_percent / 100))
+      : dbProduct.price_cents;
+    return {
+      order_id: order.id,
+      product_id: item.productId,
+      quantity: item.quantity,
+      unit_price_cents: unitPriceCents,
+      variant: item.variant,
+    };
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error: itemsError } = await (supabase as any)

@@ -38,6 +38,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   const [slugManual, setSlugManual] = useState(false);
   const [isActive, setIsActive] = useState(product?.is_active ?? true);
   const [isSoldOut, setIsSoldOut] = useState(product?.is_sold_out ?? false);
+  const [discountPercent, setDiscountPercent] = useState(product?.discount_percent ?? 0);
   const [images, setImages] = useState<UploadedImage[]>(
     (product?.images ?? []).map(img => ({ url: img.url, alt: img.alt }))
   );
@@ -157,6 +158,21 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
                     style={{ ...styles.input, flex: 1 }}
                   />
                 </div>
+              </FormField>
+
+              {/* Discount % */}
+              <FormField label="Discount (%)" htmlFor="field-discount" hint="0 = no discount">
+                <input
+                  id="field-discount"
+                  name="discount_percent"
+                  type="number"
+                  min="0"
+                  max="99"
+                  value={discountPercent === 0 ? '' : discountPercent}
+                  onChange={e => setDiscountPercent(Math.min(99, Math.max(0, parseInt(e.target.value, 10) || 0)))}
+                  placeholder="0"
+                  style={styles.input}
+                />
               </FormField>
 
               {/* Card capacity */}

@@ -18,6 +18,7 @@ export const MOCK_PRODUCTS: Product[] = [
     is_active: true,
     is_sold_out: false,
     display_order: 0,
+    discount_percent: 0,
     collection_id: null,
     created_at: '2026-05-30T00:00:00Z'
   },
@@ -38,6 +39,7 @@ export const MOCK_PRODUCTS: Product[] = [
     is_active: true,
     is_sold_out: false,
     display_order: 1,
+    discount_percent: 25,
     collection_id: null,
     created_at: '2026-05-30T00:01:00Z'
   },
@@ -58,6 +60,7 @@ export const MOCK_PRODUCTS: Product[] = [
     is_active: true,
     is_sold_out: false,
     display_order: 2,
+    discount_percent: 0,
     collection_id: null,
     created_at: '2026-05-30T00:02:00Z'
   },
@@ -78,6 +81,7 @@ export const MOCK_PRODUCTS: Product[] = [
     is_active: true,
     is_sold_out: false,
     display_order: 3,
+    discount_percent: 0,
     collection_id: null,
     created_at: '2026-05-30T00:03:00Z'
   },
@@ -98,6 +102,7 @@ export const MOCK_PRODUCTS: Product[] = [
     is_active: true,
     is_sold_out: false,
     display_order: 4,
+    discount_percent: 0,
     collection_id: null,
     created_at: '2026-05-30T00:04:00Z'
   },
@@ -118,6 +123,7 @@ export const MOCK_PRODUCTS: Product[] = [
     is_active: true,
     is_sold_out: false,
     display_order: 5,
+    discount_percent: 0,
     collection_id: null,
     created_at: '2026-05-30T00:05:00Z'
   }

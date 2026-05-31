@@ -43,12 +43,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     variant: OrderItemVariant | null = null
   ) {
     const id = makeCartLineId(product.id, variant);
+    const hasDiscount = (product.discount_percent ?? 0) > 0;
+    const finalPriceCents = hasDiscount
+      ? Math.round(product.price_cents * (1 - product.discount_percent / 100))
+      : product.price_cents;
+
     const item: CartItem = {
       id,
       productId: product.id,
       slug: product.slug,
       name: product.name,
-      price_cents: product.price_cents,
+      price_cents: finalPriceCents,
       currency: product.currency,
       quantity,
       image: product.images[0] ?? null,

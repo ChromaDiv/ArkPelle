@@ -34,7 +34,11 @@ export default function StickyPurchaseBar({
     setTimeout(() => setIsAdded(false), 2000);
   }
 
-  const displayPrice = formatPrice(product.price_cents, product.currency);
+  const hasDiscount = product.discount_percent > 0;
+  const discountedPriceCents = hasDiscount
+    ? Math.round(product.price_cents * (1 - product.discount_percent / 100))
+    : product.price_cents;
+  const displayPrice = formatPrice(discountedPriceCents, product.currency);
 
   return (
     <motion.div
@@ -55,7 +59,16 @@ export default function StickyPurchaseBar({
           <p className="font-display text-base font-light text-[var(--color-ink)]">
             {product.name}
           </p>
-          <p className="font-body text-sm text-[var(--color-gold)] mt-0.5">{displayPrice}</p>
+          {hasDiscount ? (
+            <div className="flex items-baseline gap-2 mt-0.5">
+              <span className="font-body text-sm text-[var(--color-gold)]">{displayPrice}</span>
+              <span className="font-body text-xs line-through text-[var(--color-ink-muted)]">
+                {formatPrice(product.price_cents, product.currency)}
+              </span>
+            </div>
+          ) : (
+            <p className="font-body text-sm text-[var(--color-gold)] mt-0.5">{displayPrice}</p>
+          )}
         </div>
 
         {/* Price — mobile only */}

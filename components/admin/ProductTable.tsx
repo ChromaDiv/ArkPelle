@@ -255,9 +255,30 @@ export default function ProductTable({ products }: ProductTableProps) {
 
             {/* Price */}
             <div className="admin-col-price" style={styles.col_price}>
-              <span style={styles.price}>
-                {formatPrice(product.price_cents, product.currency)}
-              </span>
+              {product.discount_percent > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <span style={{ ...styles.price, fontSize: '0.7rem', textDecoration: 'line-through', color: '#5A5048' }}>
+                    {formatPrice(product.price_cents, product.currency)}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <span style={styles.price}>
+                      {formatPrice(Math.round(product.price_cents * (1 - product.discount_percent / 100)), product.currency)}
+                    </span>
+                    <span style={{
+                      fontSize: '0.55rem',
+                      letterSpacing: '0.05em',
+                      color: '#B8934A',
+                      fontWeight: 500,
+                    }}>
+                      -{product.discount_percent}%
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <span style={styles.price}>
+                  {formatPrice(product.price_cents, product.currency)}
+                </span>
+              )}
             </div>
 
             {/* Status */}
