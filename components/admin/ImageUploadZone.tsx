@@ -7,6 +7,7 @@ import { uploadProductImage } from '@/app/actions/products';
 export interface UploadedImage {
   url: string;
   alt: string;
+  isMain?: boolean;
 }
 
 interface ImageUploadZoneProps {
@@ -43,7 +44,8 @@ export default function ImageUploadZone({ images, onChange, productName = '' }: 
     if (result.error) {
       setError(result.error);
     } else if (result.url) {
-      onChange([...images, { url: result.url, alt: productName || file.name }]);
+      const isFirst = images.length === 0;
+      onChange([...images, { url: result.url, alt: productName || file.name, isMain: isFirst }]);
     }
   }, [images, onChange, productName]);
 
@@ -62,11 +64,24 @@ export default function ImageUploadZone({ images, onChange, productName = '' }: 
   }, [uploadFile]);
 
   const removeImage = (index: number) => {
-    onChange(images.filter((_, i) => i !== index));
+    const filtered = images.filter((_, i) => i !== index);
+    const wasMain = images[index]?.isMain;
+    if (wasMain && filtered.length > 0) {
+      filtered[0].isMain = true;
+    }
+    onChange(filtered);
   };
 
   const updateAlt = (index: number, alt: string) => {
     const next = images.map((img, i) => i === index ? { ...img, alt } : img);
+    onChange(next);
+  };
+
+  const setMainImage = (index: number) => {
+    const next = images.map((img, i) => ({
+      ...img,
+      isMain: i === index,
+    }));
     onChange(next);
   };
 
@@ -149,9 +164,15 @@ export default function ImageUploadZone({ images, onChange, productName = '' }: 
                 >
                   ×
                 </button>
+                {img.isMain && (
+                  <div style={styles.mainBadge}>
+                    <span>Main</span>
+                  </div>
+                )}
               </div>
-              {/* Hidden inputs so alt text ends up in FormData */}
+              {/* Hidden inputs so alt text & isMain ends up in FormData */}
               <input type="hidden" name="image_url" value={img.url} />
+              <input type="hidden" name="image_is_main" value={img.isMain ? 'true' : 'false'} />
               <input
                 type="text"
                 name="image_alt"
@@ -162,6 +183,19 @@ export default function ImageUploadZone({ images, onChange, productName = '' }: 
                 className="admin-upload-alt-input"
                 aria-label={`Alt text for image ${i + 1}`}
               />
+              {img.isMain ? (
+                <div style={styles.mainStatusText}>
+                  ★ Primary Cover
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setMainImage(i)}
+                  className="admin-set-main-btn"
+                >
+                  Set as Main
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -169,6 +203,23 @@ export default function ImageUploadZone({ images, onChange, productName = '' }: 
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        .admin-set-main-btn {
+          width: 100%;
+          background: transparent;
+          border: 1px solid rgba(184, 147, 74, 0.15) !important;
+          border-radius: 2px;
+          color: #8A8078 !important;
+          font-size: 0.62rem !important;
+          padding: 0.3rem 0 !important;
+          cursor: pointer;
+          text-align: center;
+          transition: border-color 0.2s, color 0.2s, background 0.2s;
+        }
+        .admin-set-main-btn:hover {
+          border-color: rgba(184, 147, 74, 0.5) !important;
+          color: #B8934A !important;
+          background: rgba(184, 147, 74, 0.03);
+        }
         @media (max-width: 480px) {
           .admin-upload-alt-input {
             font-size: 16px !important;
@@ -280,6 +331,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     cursor: 'pointer',
     padding: 0,
+    zIndex: 5,
   },
   altInput: {
     width: '100%',
@@ -291,5 +343,30 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '0.35rem 0.5rem',
     outline: 'none',
     boxSizing: 'border-box',
+  },
+  mainBadge: {
+    position: 'absolute',
+    bottom: '4px',
+    left: '4px',
+    background: '#B8934A',
+    color: '#0E0A07',
+    fontSize: '0.55rem',
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    padding: '0.15rem 0.35rem',
+    borderRadius: '2px',
+    lineHeight: 1,
+    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+    pointerEvents: 'none',
+    zIndex: 5,
+  },
+  mainStatusText: {
+    fontSize: '0.62rem',
+    color: '#B8934A',
+    textAlign: 'center',
+    fontWeight: 500,
+    letterSpacing: '0.05em',
+    padding: '0.3rem 0',
   },
 };

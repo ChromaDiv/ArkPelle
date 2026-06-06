@@ -49,11 +49,16 @@ interface ProductDetailClientProps {
  * Separated from the server page to minimise client bundle size.
  */
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const productFinishes = PRODUCT_FINISHES[product.slug] || [
-    { label: 'Dark Espresso', value: 'dark-espresso', available: true },
-    { label: 'Cognac Tan', value: 'cognac-tan', available: true },
-    { label: 'Jet Black', value: 'jet-black', available: true },
-  ];
+  const colorMap: Record<string, { label: string; value: string; available: boolean }> = {
+    brown: { label: 'Geneva Brown', value: 'brown', available: true },
+    black: { label: 'Jet Black', value: 'black', available: true },
+    tan: { label: 'Cognac Tan', value: 'tan', available: true },
+  };
+
+  const productFinishes = (product.colors && product.colors.length > 0)
+    ? product.colors.map(col => colorMap[col.toLowerCase()] || { label: col, value: col, available: true })
+    : (PRODUCT_FINISHES[product.slug] || []);
+
   const [selectedFinish, setSelectedFinish] = useState(
     productFinishes.length > 0 ? productFinishes[0].value : 'default'
   );

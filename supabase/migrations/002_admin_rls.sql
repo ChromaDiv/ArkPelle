@@ -20,12 +20,15 @@ security definer
 stable
 as $$
   select (
-    auth.role() = 'authenticated'
-    and (
-      -- Direct check of admin emails or user metadata role
-      auth.email() = 'arkpelle@gmail.com'
-      or auth.email() = 'admin@arkpelle.com'
-      or (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
+    auth.role() = 'service_role'
+    or (
+      auth.role() = 'authenticated'
+      and (
+        -- Direct check of admin emails or user metadata role
+        auth.email() = 'arkpelle@gmail.com'
+        or auth.email() = 'admin@arkpelle.com'
+        or (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
+      )
     )
   );
 $$;
@@ -99,7 +102,7 @@ create policy "product-images: admin insert"
   on storage.objects for insert
   with check (
     bucket_id = 'product-images'
-    and public.is_admin()
+    and (public.is_admin() or auth.role() = 'service_role')
   );
 
 -- Admin delete
@@ -108,7 +111,7 @@ create policy "product-images: admin delete"
   on storage.objects for delete
   using (
     bucket_id = 'product-images'
-    and public.is_admin()
+    and (public.is_admin() or auth.role() = 'service_role')
   );
 
 -- ────────────────────────────────────────────────────────────

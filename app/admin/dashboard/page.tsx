@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getAdminProducts } from '@/app/actions/products';
 import ProductTable from '@/components/admin/ProductTable';
 import type { Metadata } from 'next';
+import { formatPrice } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Products — Admin',
@@ -46,7 +47,9 @@ export default async function AdminDashboardPage() {
           label="Avg. Price"
           value={
             products.length
-              ? `$${Math.round(products.reduce((s, p) => s + p.price_cents, 0) / products.length / 100)}`
+              ? formatPrice(
+                  Math.round(products.reduce((s, p) => s + p.price_cents, 0) / products.length)
+                )
               : '—'
           }
         />

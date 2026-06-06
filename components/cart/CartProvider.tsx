@@ -56,7 +56,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       price_cents: finalPriceCents,
       currency: product.currency,
       quantity,
-      image: product.images[0] ?? null,
+      image: product.images.find(img => img.isMain) || product.images[0] || null,
       variant,
     };
     dispatch({ type: 'ADD_ITEM', payload: item });

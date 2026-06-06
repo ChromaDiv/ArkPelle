@@ -228,17 +228,20 @@ export default function ProductTable({ products }: ProductTableProps) {
             {/* Thumbnail */}
             <div className="admin-col-thumb" style={styles.col_thumb}>
               <div style={styles.thumb}>
-                {product.images?.[0] ? (
-                  <Image
-                    src={product.images[0].url}
-                    alt={product.images[0].alt}
-                    fill
-                    sizes="48px"
-                    style={{ objectFit: 'cover', borderRadius: '3px' }}
-                  />
-                ) : (
-                  <span style={styles.thumbPlaceholder}>—</span>
-                )}
+                {(() => {
+                  const mainImage = product.images?.find(img => img.isMain) || product.images?.[0];
+                  return mainImage ? (
+                    <Image
+                      src={mainImage.url}
+                      alt={mainImage.alt}
+                      fill
+                      sizes="48px"
+                      style={{ objectFit: 'cover', borderRadius: '3px' }}
+                    />
+                  ) : (
+                    <span style={styles.thumbPlaceholder}>—</span>
+                  );
+                })()}
               </div>
             </div>
 

@@ -96,17 +96,22 @@ function parseProductForm(formData: FormData) {
   const depth_mm = parseFloat(formData.get('depth_mm') as string) || 0;
   const imageUrls = (formData.getAll('image_url') as string[]).filter(Boolean);
   const imageAlts = (formData.getAll('image_alt') as string[]).filter(Boolean);
+  const imageIsMains = (formData.getAll('image_is_main') as string[]).filter(Boolean);
 
   const images: ProductImage[] = imageUrls.map((url, i) => ({
     url,
     alt: imageAlts[i] ?? name,
+    isMain: imageIsMains[i] === 'true',
   }));
+
+  const colors = formData.getAll('colors') as string[];
 
   return {
     name, slug, description, price_cents, material,
     card_capacity, is_active, is_sold_out, discount_percent,
     dimensions: { width_mm, height_mm, depth_mm },
     images,
+    colors,
     currency: 'PKR',
   };
 }

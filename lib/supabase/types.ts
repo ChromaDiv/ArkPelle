@@ -5,6 +5,7 @@
 export interface ProductImage {
   url: string;
   alt: string;
+  isMain?: boolean;
 }
 
 export interface ProductDimensions {
@@ -46,6 +47,7 @@ export interface Product {
   display_order: number;
   discount_percent: number;
   collection_id: string | null;
+  colors: string[];
   created_at: string;
 }
 
@@ -115,6 +117,7 @@ export type Database = {
           display_order?: number;
           discount_percent?: number;
           collection_id?: string | null;
+          colors?: string[];
           created_at?: string;
         };
         Update: Partial<{
@@ -132,6 +135,7 @@ export type Database = {
           display_order: number;
           discount_percent: number;
           collection_id: string | null;
+          colors: string[];
         }>;
         Relationships: [];
       };

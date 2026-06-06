@@ -20,6 +20,7 @@ export const MOCK_PRODUCTS: Product[] = [
     display_order: 0,
     discount_percent: 0,
     collection_id: null,
+    colors: ['brown', 'tan', 'black'],
     created_at: '2026-05-30T00:00:00Z'
   },
   {
@@ -41,6 +42,7 @@ export const MOCK_PRODUCTS: Product[] = [
     display_order: 1,
     discount_percent: 25,
     collection_id: null,
+    colors: ['brown', 'tan', 'black'],
     created_at: '2026-05-30T00:01:00Z'
   },
   {
@@ -62,6 +64,7 @@ export const MOCK_PRODUCTS: Product[] = [
     display_order: 2,
     discount_percent: 0,
     collection_id: null,
+    colors: ['brown', 'tan', 'black'],
     created_at: '2026-05-30T00:02:00Z'
   },
   {
@@ -83,6 +86,7 @@ export const MOCK_PRODUCTS: Product[] = [
     display_order: 3,
     discount_percent: 0,
     collection_id: null,
+    colors: ['brown', 'tan', 'black'],
     created_at: '2026-05-30T00:03:00Z'
   },
   {
@@ -104,6 +108,7 @@ export const MOCK_PRODUCTS: Product[] = [
     display_order: 4,
     discount_percent: 0,
     collection_id: null,
+    colors: ['black'],
     created_at: '2026-05-30T00:04:00Z'
   },
   {
@@ -125,6 +130,7 @@ export const MOCK_PRODUCTS: Product[] = [
     display_order: 5,
     discount_percent: 0,
     collection_id: null,
+    colors: [],
     created_at: '2026-05-30T00:05:00Z'
   }
 ];

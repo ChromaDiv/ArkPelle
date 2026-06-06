@@ -18,7 +18,10 @@ interface ImageGalleryProps {
  * Reduced-motion: disables slide transitions.
  */
 export default function ImageGallery({ images, productName, className }: ImageGalleryProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const mainIdx = images.findIndex(img => img.isMain);
+    return mainIdx !== -1 ? mainIdx : 0;
+  });
   const [direction, setDirection] = useState<1 | -1>(1);
   const shouldReduce = useReducedMotion();
 

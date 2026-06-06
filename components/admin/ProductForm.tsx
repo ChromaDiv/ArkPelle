@@ -39,9 +39,26 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   const [isActive, setIsActive] = useState(product?.is_active ?? true);
   const [isSoldOut, setIsSoldOut] = useState(product?.is_sold_out ?? false);
   const [discountPercent, setDiscountPercent] = useState(product?.discount_percent ?? 0);
-  const [images, setImages] = useState<UploadedImage[]>(
-    (product?.images ?? []).map(img => ({ url: img.url, alt: img.alt }))
+  const [images, setImages] = useState<UploadedImage[]>(() => {
+    const rawImages = product?.images ?? [];
+    const hasMain = rawImages.some(img => img.isMain);
+    return rawImages.map((img, idx) => ({
+      url: img.url,
+      alt: img.alt,
+      isMain: hasMain ? !!img.isMain : idx === 0,
+    }));
+  });
+  const [selectedColors, setSelectedColors] = useState<string[]>(
+    product?.colors ?? []
   );
+
+  const handleColorToggle = (color: string) => {
+    setSelectedColors(prev =>
+      prev.includes(color)
+        ? prev.filter(c => c !== color)
+        : [...prev, color]
+    );
+  };
 
   useEffect(() => {
     if (!slugManual && name) {
@@ -257,6 +274,38 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
                   <input type="hidden" name="is_sold_out" value={isSoldOut ? 'true' : 'false'} />
                 </div>
               </FormField>
+            </div>
+          </section>
+
+          {/* ── Color Options ── */}
+          <section style={styles.section}>
+            <h2 style={styles.sectionTitle}>Color Options</h2>
+            <p style={styles.sectionHint}>
+              Select the available colors for this wallet.
+            </p>
+            <div style={styles.colorCheckboxGrid}>
+              {['brown', 'black', 'tan'].map(color => {
+                const isChecked = selectedColors.includes(color);
+                return (
+                  <label key={color} style={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="colors"
+                      value={color}
+                      checked={isChecked}
+                      onChange={() => handleColorToggle(color)}
+                      style={styles.checkboxInput}
+                    />
+                    <span style={{
+                      textTransform: 'capitalize',
+                      color: isChecked ? '#EDE8E0' : '#8A8078',
+                      transition: 'color 0.2s',
+                    }}>
+                      {color}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </section>
 
@@ -587,6 +636,26 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '50%',
     animation: 'spin 0.7s linear infinite',
     display: 'inline-block',
+  },
+  colorCheckboxGrid: {
+    display: 'flex',
+    gap: '1.5rem',
+    alignItems: 'center',
+    padding: '0.5rem 0',
+  },
+  checkboxLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    cursor: 'pointer',
+    fontSize: '0.85rem',
+    userSelect: 'none',
+  },
+  checkboxInput: {
+    accentColor: '#B8934A',
+    width: '16px',
+    height: '16px',
+    cursor: 'pointer',
   },
 };
 

@@ -17,7 +17,7 @@ interface ProductCardProps {
  * Used in the shop grid. Full-bleed image, name, material tag, price.
  */
 export default function ProductCard({ product, className, priority = false }: ProductCardProps) {
-  const firstImage = product.images[0];
+  const mainImage = product.images.find(img => img.isMain) || product.images[0];
   const hasDiscount = product.discount_percent > 0;
   const discountedPriceCents = hasDiscount
     ? Math.round(product.price_cents * (1 - product.discount_percent / 100))
@@ -34,10 +34,10 @@ export default function ProductCard({ product, className, priority = false }: Pr
       <HoverLift>
         {/* Image */}
         <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-surface)]">
-          {firstImage && (
+          {mainImage && (
             <Image
-              src={firstImage.url}
-              alt={firstImage.alt}
+              src={mainImage.url}
+              alt={mainImage.alt}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
               className={cn(
