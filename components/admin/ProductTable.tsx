@@ -5,9 +5,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { formatPrice } from '@/lib/utils';
-import { deleteProduct, restoreProduct, reorderProducts } from '@/app/actions/products';
+import {
+  deleteProduct,
+  restoreProduct,
+  reorderProducts,
+  toggleProductActive,
+  toggleProductSoldOut
+} from '@/app/actions/products';
 import type { Product } from '@/lib/supabase/types';
-import StatusBadge from './StatusBadge';
 
 interface ProductTableProps {
   products: Product[];
@@ -22,6 +27,40 @@ export default function ProductTable({ products }: ProductTableProps) {
   useEffect(() => {
     setLocalProducts(products);
   }, [products]);
+
+  // Handle toggle active status
+  const handleToggleActive = (id: string, currentActive: boolean) => {
+    const nextActive = !currentActive;
+    startTransition(async () => {
+      // Optimistic update
+      setLocalProducts(prev =>
+        prev.map(p => p.id === id ? { ...p, is_active: nextActive } : p)
+      );
+      const res = await toggleProductActive(id, nextActive);
+      if (res?.error) {
+        // Rollback
+        setLocalProducts(products);
+        alert(`Failed to update product status: ${res.error}`);
+      }
+    });
+  };
+
+  // Handle toggle sold out status
+  const handleToggleSoldOut = (id: string, currentSoldOut: boolean) => {
+    const nextSoldOut = !currentSoldOut;
+    startTransition(async () => {
+      // Optimistic update
+      setLocalProducts(prev =>
+        prev.map(p => p.id === id ? { ...p, is_sold_out: nextSoldOut } : p)
+      );
+      const res = await toggleProductSoldOut(id, nextSoldOut);
+      if (res?.error) {
+        // Rollback
+        setLocalProducts(products);
+        alert(`Failed to update product stock: ${res.error}`);
+      }
+    });
+  };
 
   // Handle soft delete (archive)
   const handleDelete = (id: string) => {
@@ -151,7 +190,8 @@ export default function ProductTable({ products }: ProductTableProps) {
         <div style={styles.col_thumb} />
         <div style={styles.col_name}>Product</div>
         <div style={styles.col_price}>Price</div>
-        <div style={styles.col_status}>Status</div>
+        <div style={styles.col_stock_hdr}>Inventory</div>
+        <div style={styles.col_status_hdr}>Status</div>
         <div style={styles.col_actions} />
       </div>
 
@@ -245,14 +285,9 @@ export default function ProductTable({ products }: ProductTableProps) {
               </div>
             </div>
 
-            {/* Name + Slug + Sold Out label */}
+            {/* Name + Slug */}
             <div className="admin-col-name" style={styles.col_name}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <span style={styles.productName}>{product.name}</span>
-                {product.is_sold_out && (
-                  <span style={styles.soldOutBadge}>Sold Out</span>
-                )}
-              </div>
+              <span style={styles.productName}>{product.name}</span>
               <span style={styles.productSlug}>/shop/{product.slug}</span>
             </div>
 
@@ -284,9 +319,80 @@ export default function ProductTable({ products }: ProductTableProps) {
               )}
             </div>
 
-            {/* Status */}
+            {/* Inventory (Stock) Toggle */}
+            <div className="admin-col-stock" style={styles.col_stock}>
+              <div style={styles.toggleWrapper}>
+                <button
+                  type="button"
+                  onClick={() => handleToggleSoldOut(product.id, product.is_sold_out)}
+                  style={{
+                    ...styles.tableToggleBtn,
+                    background: !product.is_sold_out
+                      ? 'rgba(76, 175, 80, 0.1)'
+                      : 'rgba(229, 115, 115, 0.1)',
+                    borderColor: !product.is_sold_out
+                      ? 'rgba(76, 175, 80, 0.3)'
+                      : 'rgba(229, 115, 115, 0.3)',
+                  }}
+                  aria-label={`Toggle stock status for ${product.name}`}
+                  title={!product.is_sold_out ? 'Mark as Sold Out' : 'Mark as In Stock'}
+                >
+                  <span style={{
+                    ...styles.toggleDot,
+                    background: !product.is_sold_out ? '#81C784' : '#E57373',
+                    transform: !product.is_sold_out ? 'translateX(14px)' : 'translateX(0)',
+                  }} />
+                </button>
+                <span style={{
+                  fontSize: '0.68rem',
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  color: !product.is_sold_out ? '#81C784' : '#E57373',
+                  display: 'inline-block',
+                  width: '58px',
+                }}>
+                  {!product.is_sold_out ? 'In Stock' : 'Sold Out'}
+                </span>
+              </div>
+            </div>
+
+            {/* Status Toggle */}
             <div className="admin-col-status" style={styles.col_status}>
-              <StatusBadge isActive={product.is_active} />
+              <div style={styles.toggleWrapper}>
+                <button
+                  type="button"
+                  onClick={() => handleToggleActive(product.id, product.is_active)}
+                  style={{
+                    ...styles.tableToggleBtn,
+                    background: product.is_active
+                      ? 'rgba(76, 175, 80, 0.1)'
+                      : 'rgba(138, 128, 120, 0.1)',
+                    borderColor: product.is_active
+                      ? 'rgba(76, 175, 80, 0.3)'
+                      : 'rgba(138, 128, 120, 0.2)',
+                  }}
+                  aria-label={`Toggle active status for ${product.name}`}
+                  title={product.is_active ? 'Mark as Draft' : 'Mark as Active'}
+                >
+                  <span style={{
+                    ...styles.toggleDot,
+                    background: product.is_active ? '#81C784' : '#5A5048',
+                    transform: product.is_active ? 'translateX(14px)' : 'translateX(0)',
+                  }} />
+                </button>
+                <span style={{
+                  fontSize: '0.68rem',
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  color: product.is_active ? '#81C784' : '#8A8078',
+                  display: 'inline-block',
+                  width: '58px',
+                }}>
+                  {product.is_active ? 'Active' : 'Draft'}
+                </span>
+              </div>
             </div>
 
             {/* Actions */}
@@ -359,7 +465,7 @@ export default function ProductTable({ products }: ProductTableProps) {
           }
           .admin-table-row {
             grid-template-columns: 40px 56px 1fr !important;
-            grid-template-rows: auto auto auto auto !important;
+            grid-template-rows: auto auto auto auto auto !important;
             gap: 0.5rem !important;
             padding: 1.25rem 1rem !important;
             border-bottom: 1px solid rgba(184, 147, 74, 0.1) !important;
@@ -384,14 +490,19 @@ export default function ProductTable({ products }: ProductTableProps) {
             grid-row: 2 / 3;
             margin-top: 0.15rem;
           }
-          .admin-col-status {
+          .admin-col-stock {
             grid-column: 3 / 4;
             grid-row: 3 / 4;
             margin-top: 0.25rem;
           }
+          .admin-col-status {
+            grid-column: 3 / 4;
+            grid-row: 4 / 5;
+            margin-top: 0.25rem;
+          }
           .admin-col-actions {
             grid-column: 1 / 4;
-            grid-row: 4 / 5;
+            grid-row: 5 / 6;
             display: flex !important;
             justify-content: flex-start !important;
             width: 100% !important;
@@ -446,7 +557,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   tableHeader: {
     display: 'grid',
-    gridTemplateColumns: '40px 56px 1fr 120px 90px 180px',
+    gridTemplateColumns: '40px 56px 1fr 120px 110px 110px 160px',
     gap: '1rem',
     padding: '0.75rem 1.25rem',
     background: 'rgba(14, 10, 7, 0.4)',
@@ -459,7 +570,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   row: {
     display: 'grid',
-    gridTemplateColumns: '40px 56px 1fr 120px 90px 180px',
+    gridTemplateColumns: '40px 56px 1fr 120px 110px 110px 160px',
     gap: '1rem',
     padding: '0.875rem 1.25rem',
     alignItems: 'center',
@@ -522,6 +633,24 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '0.15rem',
   },
   col_price: {
+    fontSize: '0.6rem',
+    letterSpacing: '0.15em',
+    color: '#5A5048',
+    textTransform: 'uppercase',
+  },
+  col_stock_hdr: {
+    fontSize: '0.6rem',
+    letterSpacing: '0.15em',
+    color: '#5A5048',
+    textTransform: 'uppercase',
+  },
+  col_stock: {
+    fontSize: '0.6rem',
+    letterSpacing: '0.15em',
+    color: '#5A5048',
+    textTransform: 'uppercase',
+  },
+  col_status_hdr: {
     fontSize: '0.6rem',
     letterSpacing: '0.15em',
     color: '#5A5048',
@@ -610,5 +739,30 @@ const styles: Record<string, React.CSSProperties> = {
   restoreBtn: {
     borderColor: 'rgba(76, 175, 80, 0.2)',
     color: '#81C784',
+  },
+  toggleWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.4rem',
+  },
+  tableToggleBtn: {
+    width: '30px',
+    height: '16px',
+    borderRadius: '8px',
+    border: '1px solid',
+    cursor: 'pointer',
+    position: 'relative',
+    padding: 0,
+    transition: 'background 0.3s, border-color 0.3s',
+    flexShrink: 0,
+  },
+  toggleDot: {
+    position: 'absolute',
+    top: '1px',
+    left: '1px',
+    width: '12px',
+    height: '12px',
+    borderRadius: '50%',
+    transition: 'transform 0.3s, background 0.3s',
   },
 };

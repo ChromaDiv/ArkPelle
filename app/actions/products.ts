@@ -332,3 +332,53 @@ export async function reorderProducts(orderedIds: string[]): Promise<{ success?:
   revalidatePath('/shop');
   return { success: true };
 }
+
+// ─── TOGGLE STATUS ───────────────────────────────────────────────────────────
+
+export async function toggleProductActive(id: string, is_active: boolean) {
+  if (!isSupabaseConfigured()) {
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/shop');
+    return { success: true };
+  }
+
+  const { supabase } = await requireAdmin();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('products')
+    .update({ is_active })
+    .eq('id', id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/shop');
+  return { success: true };
+}
+
+export async function toggleProductSoldOut(id: string, is_sold_out: boolean) {
+  if (!isSupabaseConfigured()) {
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/shop');
+    return { success: true };
+  }
+
+  const { supabase } = await requireAdmin();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('products')
+    .update({ is_sold_out })
+    .eq('id', id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/shop');
+  return { success: true };
+}
