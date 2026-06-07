@@ -118,16 +118,10 @@ export async function updateOrderStatus(
 
   const { supabase } = await requireAdmin();
 
-  // Map extended UI statuses to DB-compatible ones
-  const dbStatus =
-    status === 'packed'   ? 'confirmed'
-  : status === 'reviewed' ? 'delivered'
-  : status;
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
     .from('orders')
-    .update({ status: dbStatus })
+    .update({ status })
     .eq('id', orderId);
 
   if (error) {

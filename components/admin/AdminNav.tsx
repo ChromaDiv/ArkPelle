@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import NotificationBell from '@/components/admin/NotificationBell';
 
 const navLinks = [
   {
@@ -61,6 +62,10 @@ export default function AdminNav() {
           </svg>
           <span className="admin-mobile-title">Ark Pelle Admin</span>
         </div>
+        {/* Bell in mobile header */}
+        <div style={{ marginLeft: 'auto' }}>
+          <NotificationBell />
+        </div>
       </header>
 
       {/* Sidebar Overlay for Mobile/Tablet drawer */}
@@ -83,6 +88,10 @@ export default function AdminNav() {
           <div>
             <span style={styles.brandName}>Ark Pelle</span>
             <span style={styles.brandRole}>Admin</span>
+          </div>
+          {/* Bell in sidebar */}
+          <div style={{ marginLeft: 'auto' }}>
+            <NotificationBell />
           </div>
         </div>
 

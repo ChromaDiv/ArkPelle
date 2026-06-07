@@ -185,7 +185,7 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<{
-          status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+          status: 'pending' | 'confirmed' | 'packed' | 'shipped' | 'delivered' | 'reviewed' | 'cancelled';
           total_cents: number;
           currency: string;
           shipping_address: ShippingAddress;
