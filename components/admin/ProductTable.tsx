@@ -184,19 +184,21 @@ export default function ProductTable({ products }: ProductTableProps) {
         </div>
       )}
 
-      {/* Header row */}
-      <div className="admin-table-header" style={styles.tableHeader}>
-        <div style={styles.col_drag_hdr} />
-        <div style={styles.col_thumb} />
-        <div style={styles.col_name}>Product</div>
-        <div style={styles.col_price}>Price</div>
-        <div style={styles.col_stock_hdr}>Inventory</div>
-        <div style={styles.col_status_hdr}>Status</div>
-        <div style={styles.col_actions} />
-      </div>
+      <div style={{ overflowX: 'auto', width: '100%', scrollbarWidth: 'thin' }}>
+        <div className="admin-table-inner">
+          {/* Header row */}
+          <div className="admin-table-header" style={styles.tableHeader}>
+            <div style={styles.col_drag_hdr} />
+            <div style={styles.col_thumb} />
+            <div style={styles.col_name}>Product</div>
+            <div style={styles.col_price}>Price</div>
+            <div style={styles.col_stock_hdr}>Inventory</div>
+            <div style={styles.col_status_hdr}>Status</div>
+            <div style={styles.col_actions} />
+          </div>
 
-      {/* Body */}
-      <div style={styles.tableBody}>
+          {/* Body */}
+          <div style={styles.tableBody}>
         {localProducts.length === 0 && (
           <div style={styles.empty}>
             <p style={{ color: '#5A5048', fontSize: '0.875rem' }}>
@@ -345,13 +347,18 @@ export default function ProductTable({ products }: ProductTableProps) {
 
             {/* Inventory (Stock) Toggle */}
             <div className="admin-col-stock" style={styles.col_stock}>
-              <div style={styles.toggleWrapper}>
+              <div
+                className="admin-table-toggle-wrapper"
+                onClick={() => handleToggleSoldOut(product.id, product.is_sold_out)}
+                title={!product.is_sold_out ? 'Mark as Sold Out' : 'Mark as In Stock'}
+                style={{ cursor: 'pointer' }}
+              >
                 <button
                   type="button"
                   className="admin-table-toggle"
-                  onClick={() => handleToggleSoldOut(product.id, product.is_sold_out)}
                   style={{
                     ...styles.tableToggleBtn,
+                    pointerEvents: 'none',
                     background: !product.is_sold_out
                       ? 'rgba(76, 175, 80, 0.12)'
                       : 'rgba(229, 115, 115, 0.12)',
@@ -360,7 +367,6 @@ export default function ProductTable({ products }: ProductTableProps) {
                       : 'rgba(229, 115, 115, 0.35)',
                   }}
                   aria-label={`Toggle stock status for ${product.name}`}
-                  title={!product.is_sold_out ? 'Mark as Sold Out' : 'Mark as In Stock'}
                 >
                   <span style={{
                     ...styles.toggleDot,
@@ -376,6 +382,7 @@ export default function ProductTable({ products }: ProductTableProps) {
                   color: !product.is_sold_out ? '#81C784' : '#E57373',
                   display: 'inline-block',
                   width: '58px',
+                  userSelect: 'none',
                 }}>
                   {!product.is_sold_out ? 'In Stock' : 'Sold Out'}
                 </span>
@@ -384,13 +391,18 @@ export default function ProductTable({ products }: ProductTableProps) {
 
             {/* Status Toggle */}
             <div className="admin-col-status" style={styles.col_status}>
-              <div style={styles.toggleWrapper}>
+              <div
+                className="admin-table-toggle-wrapper"
+                onClick={() => handleToggleActive(product.id, product.is_active)}
+                title={product.is_active ? 'Mark as Draft' : 'Mark as Active'}
+                style={{ cursor: 'pointer' }}
+              >
                 <button
                   type="button"
                   className="admin-table-toggle"
-                  onClick={() => handleToggleActive(product.id, product.is_active)}
                   style={{
                     ...styles.tableToggleBtn,
+                    pointerEvents: 'none',
                     background: product.is_active
                       ? 'rgba(76, 175, 80, 0.12)'
                       : 'rgba(138, 128, 120, 0.12)',
@@ -399,7 +411,6 @@ export default function ProductTable({ products }: ProductTableProps) {
                       : 'rgba(138, 128, 120, 0.25)',
                   }}
                   aria-label={`Toggle active status for ${product.name}`}
-                  title={product.is_active ? 'Mark as Draft' : 'Mark as Active'}
                 >
                   <span style={{
                     ...styles.toggleDot,
@@ -415,6 +426,7 @@ export default function ProductTable({ products }: ProductTableProps) {
                   color: product.is_active ? '#81C784' : '#8A8078',
                   display: 'inline-block',
                   width: '58px',
+                  userSelect: 'none',
                 }}>
                   {product.is_active ? 'Active' : 'Draft'}
                 </span>
@@ -439,6 +451,8 @@ export default function ProductTable({ products }: ProductTableProps) {
           </motion.div>
         ))}
       </div>
+        </div>
+      </div>
 
       <style>{`
         .admin-table-row:hover {
@@ -453,9 +467,23 @@ export default function ProductTable({ products }: ProductTableProps) {
         .admin-table-toggle {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .admin-table-toggle:hover {
+        @media (min-width: 1025px) {
+          .admin-table-inner {
+            min-width: 950px;
+          }
+        }
+        .admin-table-toggle-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          user-select: none;
+        }
+        .admin-table-toggle-wrapper:hover .admin-table-toggle {
           filter: brightness(1.2) !important;
           box-shadow: 0 0 6px rgba(184, 147, 74, 0.2) !important;
+        }
+        .admin-table-toggle-wrapper:active .admin-table-toggle {
+          transform: scale(0.95) !important;
         }
         .admin-table-toggle:active {
           transform: scale(0.95) !important;
