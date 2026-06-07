@@ -56,12 +56,29 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   };
 
   const productFinishes = (product.colors && product.colors.length > 0)
-    ? product.colors.map(col => colorMap[col.toLowerCase()] || { label: col, value: col, available: true })
-    : (PRODUCT_FINISHES[product.slug] || []);
+    ? product.colors.map(col => {
+        const colorLower = col.toLowerCase();
+        const stock = product.color_quantities?.[colorLower];
+        const isAvailable = stock !== undefined ? stock > 0 : !product.is_sold_out;
+        const mapped = colorMap[colorLower] || { label: col, value: colorLower, available: true };
+        return {
+          ...mapped,
+          value: colorLower,
+          available: isAvailable,
+        };
+      })
+    : (PRODUCT_FINISHES[product.slug] || []).map(finish => {
+        const colorLower = finish.value.toLowerCase();
+        const stock = product.color_quantities?.[colorLower];
+        const isAvailable = stock !== undefined ? stock > 0 : finish.available;
+        return {
+          ...finish,
+          available: isAvailable,
+        };
+      });
 
-  const [selectedFinish, setSelectedFinish] = useState(
-    productFinishes.length > 0 ? productFinishes[0].value : 'default'
-  );
+  const firstAvailableFinish = productFinishes.find(f => f.available)?.value || (productFinishes.length > 0 ? productFinishes[0].value : 'default');
+  const [selectedFinish, setSelectedFinish] = useState(firstAvailableFinish);
   const [isAdded, setIsAdded] = useState(false);
   const { addItem } = useCart();
   const shouldReduce = useReducedMotion();
@@ -141,7 +158,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
           {/* Add to cart — desktop */}
           <div className="hidden lg:flex flex-col gap-3 mb-14">
-            {product.is_sold_out ? (
+            {(product.is_sold_out || (productFinishes.length > 0 && !productFinishes.find(f => f.value === selectedFinish)?.available)) ? (
               <Button
                 id="add-to-cart-desktop"
                 variant="primary"

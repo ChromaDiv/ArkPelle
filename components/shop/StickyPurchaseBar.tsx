@@ -40,6 +40,12 @@ export default function StickyPurchaseBar({
     : product.price_cents;
   const displayPrice = formatPrice(discountedPriceCents, product.currency);
 
+  const colorKey = selectedVariant?.finish?.toLowerCase();
+  const isColorSoldOut = colorKey && product.color_quantities
+    ? (product.color_quantities[colorKey] ?? 0) <= 0
+    : false;
+  const isSoldOutUI = product.is_sold_out || isColorSoldOut;
+
   return (
     <motion.div
       className={cn(
@@ -81,7 +87,7 @@ export default function StickyPurchaseBar({
               {itemCount} in bag
             </span>
           )}
-          {product.is_sold_out ? (
+          {isSoldOutUI ? (
             <Button
               id="add-to-cart-btn"
               variant="primary"

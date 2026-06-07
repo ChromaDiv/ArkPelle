@@ -51,13 +51,30 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   const [selectedColors, setSelectedColors] = useState<string[]>(
     product?.colors ?? []
   );
+  const [colorQuantities, setColorQuantities] = useState<Record<string, number>>(() => {
+    return product?.color_quantities ?? {};
+  });
 
   const handleColorToggle = (color: string) => {
-    setSelectedColors(prev =>
-      prev.includes(color)
+    setSelectedColors(prev => {
+      const next = prev.includes(color)
         ? prev.filter(c => c !== color)
-        : [...prev, color]
-    );
+        : [...prev, color];
+      
+      setColorQuantities(prevQuantities => {
+        const updated = { ...prevQuantities };
+        if (next.includes(color)) {
+          if (updated[color] === undefined) {
+            updated[color] = 10; // default quantity
+          }
+        } else {
+          delete updated[color];
+        }
+        return updated;
+      });
+
+      return next;
+    });
   };
 
   useEffect(() => {
@@ -283,30 +300,57 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
             <p style={styles.sectionHint}>
               Select the available colors for this wallet.
             </p>
-            <div style={styles.colorCheckboxGrid}>
+            <div style={{ ...styles.colorCheckboxGrid, flexDirection: 'column', alignItems: 'flex-start', gap: '1rem' }}>
               {['brown', 'black', 'tan'].map(color => {
                 const isChecked = selectedColors.includes(color);
                 return (
-                  <label key={color} style={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      name="colors"
-                      value={color}
-                      checked={isChecked}
-                      onChange={() => handleColorToggle(color)}
-                      style={styles.checkboxInput}
-                    />
-                    <span style={{
-                      textTransform: 'capitalize',
-                      color: isChecked ? '#EDE8E0' : '#8A8078',
-                      transition: 'color 0.2s',
-                    }}>
-                      {color}
-                    </span>
-                  </label>
+                  <div key={color} style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                    <label style={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        name="colors"
+                        value={color}
+                        checked={isChecked}
+                        onChange={() => handleColorToggle(color)}
+                        style={styles.checkboxInput}
+                      />
+                      <span style={{
+                        textTransform: 'capitalize',
+                        color: isChecked ? '#EDE8E0' : '#8A8078',
+                        transition: 'color 0.2s',
+                      }}>
+                        {color}
+                      </span>
+                    </label>
+
+                    {isChecked && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label htmlFor={`qty-${color}`} style={{ fontSize: '0.65rem', color: '#8A8078', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                          Qty:
+                        </label>
+                        <input
+                          id={`qty-${color}`}
+                          type="number"
+                          min="0"
+                          value={colorQuantities[color] ?? 0}
+                          onChange={e => {
+                            const val = Math.max(0, parseInt(e.target.value, 10) || 0);
+                            setColorQuantities(prev => ({ ...prev, [color]: val }));
+                          }}
+                          style={{
+                            ...styles.input,
+                            width: '70px',
+                            padding: '0.35rem 0.5rem',
+                            fontSize: '0.8rem',
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
+            <input type="hidden" name="color_quantities" value={JSON.stringify(colorQuantities)} />
           </section>
 
           {/* ── Dimensions ── */}

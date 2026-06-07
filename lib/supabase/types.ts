@@ -48,6 +48,7 @@ export interface Product {
   discount_percent: number;
   collection_id: string | null;
   colors: string[];
+  color_quantities?: Record<string, number>;
   created_at: string;
 }
 
@@ -118,6 +119,7 @@ export type Database = {
           discount_percent?: number;
           collection_id?: string | null;
           colors?: string[];
+          color_quantities?: Record<string, number>;
           created_at?: string;
         };
         Update: Partial<{
@@ -136,6 +138,7 @@ export type Database = {
           discount_percent: number;
           collection_id: string | null;
           colors: string[];
+          color_quantities: Record<string, number>;
         }>;
         Relationships: [];
       };

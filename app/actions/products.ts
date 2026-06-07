@@ -89,7 +89,7 @@ function parseProductForm(formData: FormData) {
   const material = (formData.get('material') as string).trim();
   const card_capacity = parseInt(formData.get('card_capacity') as string, 10) || 0;
   const is_active = formData.get('is_active') === 'true';
-  const is_sold_out = formData.get('is_sold_out') === 'true';
+  let is_sold_out = formData.get('is_sold_out') === 'true';
   const discount_percent = Math.min(99, Math.max(0, parseInt(formData.get('discount_percent') as string, 10) || 0));
   const width_mm = parseFloat(formData.get('width_mm') as string) || 0;
   const height_mm = parseFloat(formData.get('height_mm') as string) || 0;
@@ -105,6 +105,23 @@ function parseProductForm(formData: FormData) {
   }));
 
   const colors = formData.getAll('colors') as string[];
+  const colorQuantitiesStr = formData.get('color_quantities') as string;
+  let color_quantities: Record<string, number> = {};
+  try {
+    if (colorQuantitiesStr) {
+      color_quantities = JSON.parse(colorQuantitiesStr);
+    }
+  } catch (err) {
+    console.error('Failed to parse color_quantities JSON:', err);
+  }
+
+  // Automatically mark as sold out if colors are selected but their total quantity is 0
+  if (colors.length > 0) {
+    const totalQty = colors.reduce((sum, col) => sum + (color_quantities[col] ?? 0), 0);
+    if (totalQty === 0) {
+      is_sold_out = true;
+    }
+  }
 
   return {
     name, slug, description, price_cents, material,
@@ -112,6 +129,7 @@ function parseProductForm(formData: FormData) {
     dimensions: { width_mm, height_mm, depth_mm },
     images,
     colors,
+    color_quantities,
     currency: 'PKR',
   };
 }

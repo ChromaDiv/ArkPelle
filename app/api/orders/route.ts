@@ -14,7 +14,7 @@ interface CreateOrderBody {
   currency: string;
 }
 
-type ProductRow = Pick<Product, 'id' | 'price_cents' | 'is_active' | 'discount_percent'>;
+type ProductRow = Pick<Product, 'id' | 'price_cents' | 'is_active' | 'discount_percent' | 'colors' | 'color_quantities' | 'is_sold_out'>;
 
 /**
  * POST /api/orders
@@ -52,12 +52,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  // 3. Fetch authoritative product prices from DB
+  // 3. Fetch authoritative product details and stock from DB
   const productIds = items.map((i) => i.productId);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: rawProducts, error: productsError } = await (supabase as any)
     .from('products')
-    .select('id, price_cents, is_active, discount_percent')
+    .select('id, price_cents, is_active, discount_percent, colors, color_quantities, is_sold_out')
     .in('id', productIds);
 
   const products = (rawProducts ?? []) as unknown as ProductRow[];
@@ -133,6 +133,45 @@ export async function POST(request: NextRequest) {
 
   if (itemsError) {
     console.error('Order items insert error:', itemsError);
+  }
+
+  // 7. Adjust color stock quantities in database automatically
+  for (const item of items) {
+    const dbProduct = productMap.get(item.productId);
+    if (!dbProduct) continue;
+
+    const colors = dbProduct.colors || [];
+    if (colors.length === 0) continue;
+
+    const colorQuantities = { ...(dbProduct.color_quantities || {}) } as Record<string, number>;
+    const colorKey = item.variant?.finish || item.variant?.color;
+
+    if (colorKey) {
+      const colorLower = colorKey.toLowerCase();
+      if (colorLower in colorQuantities) {
+        const currentQty = colorQuantities[colorLower] ?? 0;
+        const newQty = Math.max(0, currentQty - item.quantity);
+        colorQuantities[colorLower] = newQty;
+
+        // Check if all colors of this product are now sold out
+        const totalQty = colors.reduce((sum, col) => sum + (colorQuantities[col.toLowerCase()] ?? 0), 0);
+        const shouldBeSoldOut = totalQty === 0;
+
+        // Update in database
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: updateError } = await (supabase as any)
+          .from('products')
+          .update({
+            color_quantities: colorQuantities,
+            is_sold_out: shouldBeSoldOut,
+          })
+          .eq('id', item.productId);
+
+        if (updateError) {
+          console.error(`Failed to update stock for product ${item.productId}:`, updateError);
+        }
+      }
+    }
   }
 
   return NextResponse.json({ orderId: order.id }, { status: 201 });
