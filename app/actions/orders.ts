@@ -1,50 +1,13 @@
 'use server';
 
+// ── IMPORTANT: This file may ONLY export async functions (Next.js 'use server' rule).
+// Constants and types live in @/lib/orders/types.ts
+
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient, createServiceClient, isSupabaseConfigured } from '@/lib/supabase/server';
-import type { Order, OrderItem, Product, ShippingAddress } from '@/lib/supabase/types';
-
-// ─── Extended status type ─────────────────────────────────────────────────────
-// DB stores: pending | confirmed | shipped | delivered | cancelled
-// We add UI-only extended labels mapped to those values
-
-export type OrderStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'packed'
-  | 'shipped'
-  | 'delivered'
-  | 'reviewed'
-  | 'cancelled';
-
-export const ORDER_STATUS_OPTIONS: { value: OrderStatus; label: string; color: string }[] = [
-  { value: 'pending',   label: 'Pending',              color: '#8A8078' },
-  { value: 'confirmed', label: 'Confirmed',             color: '#B8934A' },
-  { value: 'packed',    label: 'Packed',                color: '#7B9EA6' },
-  { value: 'shipped',   label: 'Shipped',               color: '#5B8C6B' },
-  { value: 'delivered', label: 'Delivered',             color: '#4CAF50' },
-  { value: 'reviewed',  label: 'Reviewed by Customer',  color: '#9C7BB5' },
-  { value: 'cancelled', label: 'Cancelled',             color: '#C0392B' },
-];
-
-// ─── Extended order row (with joined data) ────────────────────────────────────
-
-export interface AdminOrderItem extends OrderItem {
-  product_name: string;
-  product_slug: string;
-}
-
-export interface AdminOrder {
-  id: string;
-  user_id: string;
-  status: OrderStatus;
-  total_cents: number;
-  currency: string;
-  shipping_address: ShippingAddress;
-  created_at: string;
-  items: AdminOrderItem[];
-}
+import type { Order, OrderItem, Product } from '@/lib/supabase/types';
+import type { AdminOrder, AdminOrderItem, OrderStatus } from '@/lib/orders/types';
 
 // ─── Admin guard ──────────────────────────────────────────────────────────────
 
@@ -102,7 +65,7 @@ export async function getAdminOrders(): Promise<AdminOrder[]> {
 
   const orderItems = (items ?? []) as OrderItem[];
 
-  // Fetch product names for the items
+  // Fetch product names
   const productIds = [...new Set(orderItems.map(i => i.product_id))];
   let productMap = new Map<string, { name: string; slug: string }>();
 
@@ -155,10 +118,11 @@ export async function updateOrderStatus(
 
   const { supabase } = await requireAdmin();
 
-  // Map extended statuses to DB-compatible ones
-  const dbStatus = status === 'packed'   ? 'confirmed'
-                 : status === 'reviewed' ? 'delivered'
-                 : status;
+  // Map extended UI statuses to DB-compatible ones
+  const dbStatus =
+    status === 'packed'   ? 'confirmed'
+  : status === 'reviewed' ? 'delivered'
+  : status;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)

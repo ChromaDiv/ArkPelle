@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { updateOrderStatus } from '@/app/actions/orders';
-import type { AdminOrder, OrderStatus } from '@/app/actions/orders';
-import { ORDER_STATUS_OPTIONS } from '@/app/actions/orders';
+import type { AdminOrder, OrderStatus } from '@/lib/orders/types';
+import { ORDER_STATUS_OPTIONS } from '@/lib/orders/types';
 import { formatPrice } from '@/lib/utils';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
