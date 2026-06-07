@@ -192,6 +192,7 @@ export default function AdminNav() {
           align-self: flex-start;
           height: 100vh;
           overflow: visible;
+          z-index: 100;
         }
 
         @media (max-width: 1024px) {
