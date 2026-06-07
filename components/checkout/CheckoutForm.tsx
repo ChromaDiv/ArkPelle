@@ -39,7 +39,7 @@ export default function CheckoutForm() {
     city: '',
     state: '',
     postal_code: '',
-    country: 'US',
+    country: 'Pakistan',
   });
 
   const displayTotal = formatPrice(subtotalCents, currency);
@@ -243,13 +243,37 @@ export default function CheckoutForm() {
                   onChange={(v) => setShippingAddress((s) => ({ ...s, city: v }))}
                   required
                 />
-                <FormField
-                  id="shipping-state"
-                  label="State"
-                  value={shippingAddress.state}
-                  onChange={(v) => setShippingAddress((s) => ({ ...s, state: v }))}
-                  required
-                />
+                <div>
+                  <label
+                    htmlFor="shipping-province"
+                    className="block font-body text-2xs tracking-[0.15em] uppercase text-[var(--color-ink-muted)] mb-2"
+                  >
+                    Province *
+                  </label>
+                  <select
+                    id="shipping-province"
+                    value={shippingAddress.state}
+                    onChange={(e) => setShippingAddress((s) => ({ ...s, state: e.target.value }))}
+                    required
+                    className={cn(
+                      'w-full bg-[var(--color-surface)] border border-gold-dim/50',
+                      'px-4 py-3 font-body text-base md:text-sm text-[var(--color-ink)]',
+                      'outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--color-surface)]',
+                      'transition-colors duration-300'
+                    )}
+                  >
+                    <option value="" disabled style={{ background: '#1A1410', color: '#8A8078' }}>
+                      Select Province
+                    </option>
+                    <option value="Punjab" style={{ background: '#1A1410', color: '#EDE8E0' }}>Punjab</option>
+                    <option value="Sindh" style={{ background: '#1A1410', color: '#EDE8E0' }}>Sindh</option>
+                    <option value="Khyber Pakhtunkhwa" style={{ background: '#1A1410', color: '#EDE8E0' }}>Khyber Pakhtunkhwa (KPK)</option>
+                    <option value="Balochistan" style={{ background: '#1A1410', color: '#EDE8E0' }}>Balochistan</option>
+                    <option value="Islamabad Capital Territory" style={{ background: '#1A1410', color: '#EDE8E0' }}>Islamabad Capital Territory</option>
+                    <option value="Azad Kashmir" style={{ background: '#1A1410', color: '#EDE8E0' }}>Azad Jammu & Kashmir (AJK)</option>
+                    <option value="Gilgit-Baltistan" style={{ background: '#1A1410', color: '#EDE8E0' }}>Gilgit-Baltistan</option>
+                  </select>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <FormField
@@ -257,7 +281,7 @@ export default function CheckoutForm() {
                   label="Postal Code"
                   value={shippingAddress.postal_code}
                   onChange={(v) => setShippingAddress((s) => ({ ...s, postal_code: v }))}
-                  required
+                  required={false}
                 />
                 <FormField
                   id="shipping-country"
@@ -265,6 +289,7 @@ export default function CheckoutForm() {
                   value={shippingAddress.country}
                   onChange={(v) => setShippingAddress((s) => ({ ...s, country: v }))}
                   required
+                  disabled
                 />
               </div>
 
@@ -373,12 +398,14 @@ function FormField({
   value,
   onChange,
   required = false,
+  disabled = false,
 }: {
   id: string;
   label: string;
   value: string;
   onChange: (v: string) => void;
   required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <div>
@@ -394,12 +421,14 @@ function FormField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
+        disabled={disabled}
         className={cn(
           'w-full bg-[var(--color-surface)] border border-gold-dim/50',
           'px-4 py-3 font-body text-base md:text-sm text-[var(--color-ink)]',
           'placeholder:text-[var(--color-ink-muted)] outline-none',
           'focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--color-surface)]',
-          'transition-colors duration-300'
+          'transition-colors duration-300',
+          disabled && 'opacity-60 cursor-not-allowed border-gold-dim/20'
         )}
       />
     </div>
