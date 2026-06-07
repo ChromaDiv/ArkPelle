@@ -90,7 +90,7 @@ export default function AdminNav() {
             <span style={styles.brandRole}>Admin</span>
           </div>
           {/* Bell in sidebar — opens rightward so it isn't clipped */}
-          <div style={{ marginLeft: 'auto' }}>
+          <div className="admin-sidebar-bell" style={{ marginLeft: 'auto' }}>
             <NotificationBell align="right" />
           </div>
         </div>
@@ -195,6 +195,9 @@ export default function AdminNav() {
         }
 
         @media (max-width: 1024px) {
+          .admin-sidebar-bell {
+            display: none !important;
+          }
           .admin-mobile-header {
             display: flex;
           }
