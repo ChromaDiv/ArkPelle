@@ -289,6 +289,30 @@ export default function ProductTable({ products }: ProductTableProps) {
             <div className="admin-col-name" style={styles.col_name}>
               <span style={styles.productName}>{product.name}</span>
               <span style={styles.productSlug}>/shop/{product.slug}</span>
+              {product.colors && product.colors.length > 0 && (
+                <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
+                  {product.colors.map(col => {
+                    const qty = product.color_quantities?.[col.toLowerCase()] ?? 0;
+                    return (
+                      <span key={col} style={{
+                        fontSize: '0.62rem',
+                        letterSpacing: '0.05em',
+                        textTransform: 'uppercase',
+                        background: 'rgba(14, 10, 7, 0.5)',
+                        border: '1px solid rgba(184, 147, 74, 0.15)',
+                        borderRadius: '2px',
+                        padding: '0.08rem 0.35rem',
+                        color: qty > 0 ? '#EDE8E0' : '#E57373',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.2rem',
+                      }}>
+                        {col}: <strong style={{ color: qty > 0 ? '#B8934A' : '#E57373', fontWeight: 600 }}>{qty}</strong>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Price */}
@@ -324,15 +348,16 @@ export default function ProductTable({ products }: ProductTableProps) {
               <div style={styles.toggleWrapper}>
                 <button
                   type="button"
+                  className="admin-table-toggle"
                   onClick={() => handleToggleSoldOut(product.id, product.is_sold_out)}
                   style={{
                     ...styles.tableToggleBtn,
                     background: !product.is_sold_out
-                      ? 'rgba(76, 175, 80, 0.1)'
-                      : 'rgba(229, 115, 115, 0.1)',
+                      ? 'rgba(76, 175, 80, 0.12)'
+                      : 'rgba(229, 115, 115, 0.12)',
                     borderColor: !product.is_sold_out
-                      ? 'rgba(76, 175, 80, 0.3)'
-                      : 'rgba(229, 115, 115, 0.3)',
+                      ? 'rgba(76, 175, 80, 0.35)'
+                      : 'rgba(229, 115, 115, 0.35)',
                   }}
                   aria-label={`Toggle stock status for ${product.name}`}
                   title={!product.is_sold_out ? 'Mark as Sold Out' : 'Mark as In Stock'}
@@ -340,7 +365,7 @@ export default function ProductTable({ products }: ProductTableProps) {
                   <span style={{
                     ...styles.toggleDot,
                     background: !product.is_sold_out ? '#81C784' : '#E57373',
-                    transform: !product.is_sold_out ? 'translateX(14px)' : 'translateX(0)',
+                    transform: !product.is_sold_out ? 'translateX(20px)' : 'translateX(0)',
                   }} />
                 </button>
                 <span style={{
@@ -362,15 +387,16 @@ export default function ProductTable({ products }: ProductTableProps) {
               <div style={styles.toggleWrapper}>
                 <button
                   type="button"
+                  className="admin-table-toggle"
                   onClick={() => handleToggleActive(product.id, product.is_active)}
                   style={{
                     ...styles.tableToggleBtn,
                     background: product.is_active
-                      ? 'rgba(76, 175, 80, 0.1)'
-                      : 'rgba(138, 128, 120, 0.1)',
+                      ? 'rgba(76, 175, 80, 0.12)'
+                      : 'rgba(138, 128, 120, 0.12)',
                     borderColor: product.is_active
-                      ? 'rgba(76, 175, 80, 0.3)'
-                      : 'rgba(138, 128, 120, 0.2)',
+                      ? 'rgba(76, 175, 80, 0.35)'
+                      : 'rgba(138, 128, 120, 0.25)',
                   }}
                   aria-label={`Toggle active status for ${product.name}`}
                   title={product.is_active ? 'Mark as Draft' : 'Mark as Active'}
@@ -378,7 +404,7 @@ export default function ProductTable({ products }: ProductTableProps) {
                   <span style={{
                     ...styles.toggleDot,
                     background: product.is_active ? '#81C784' : '#5A5048',
-                    transform: product.is_active ? 'translateX(14px)' : 'translateX(0)',
+                    transform: product.is_active ? 'translateX(20px)' : 'translateX(0)',
                   }} />
                 </button>
                 <span style={{
@@ -409,39 +435,6 @@ export default function ProductTable({ products }: ProductTableProps) {
                 </svg>
                 Edit
               </Link>
-
-              {product.is_active ? (
-                <button
-                  type="button"
-                  id={`archive-product-${product.id}`}
-                  onClick={() => handleDelete(product.id)}
-                  disabled={isPending}
-                  style={{ ...styles.actionBtn, ...styles.archiveBtn }}
-                  title="Archive product"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="21 8 21 21 3 21 3 8"/>
-                    <rect x="1" y="3" width="22" height="5"/>
-                    <line x1="10" y1="12" x2="14" y2="12"/>
-                  </svg>
-                  Archive
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  id={`restore-product-${product.id}`}
-                  onClick={() => handleRestore(product.id)}
-                  disabled={isPending}
-                  style={{ ...styles.actionBtn, ...styles.restoreBtn }}
-                  title="Restore product"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="1 4 1 10 7 10"/>
-                    <path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
-                  </svg>
-                  Restore
-                </button>
-              )}
             </div>
           </motion.div>
         ))}
@@ -456,6 +449,16 @@ export default function ProductTable({ products }: ProductTableProps) {
           opacity: 0.3 !important;
           background: rgba(184, 147, 74, 0.05) !important;
           border-color: rgba(184, 147, 74, 0.3) !important;
+        }
+        .admin-table-toggle {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .admin-table-toggle:hover {
+          filter: brightness(1.2) !important;
+          box-shadow: 0 0 6px rgba(184, 147, 74, 0.2) !important;
+        }
+        .admin-table-toggle:active {
+          transform: scale(0.95) !important;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -557,7 +560,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   tableHeader: {
     display: 'grid',
-    gridTemplateColumns: '40px 56px 1fr 120px 110px 110px 160px',
+    gridTemplateColumns: '40px 56px 1fr 120px 110px 110px 100px',
     gap: '1rem',
     padding: '0.75rem 1.25rem',
     background: 'rgba(14, 10, 7, 0.4)',
@@ -570,7 +573,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   row: {
     display: 'grid',
-    gridTemplateColumns: '40px 56px 1fr 120px 110px 110px 160px',
+    gridTemplateColumns: '40px 56px 1fr 120px 110px 110px 100px',
     gap: '1rem',
     padding: '0.875rem 1.25rem',
     alignItems: 'center',
@@ -746,23 +749,24 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '0.4rem',
   },
   tableToggleBtn: {
-    width: '30px',
-    height: '16px',
-    borderRadius: '8px',
+    width: '38px',
+    height: '20px',
+    borderRadius: '10px',
     border: '1px solid',
     cursor: 'pointer',
     position: 'relative',
     padding: 0,
-    transition: 'background 0.3s, border-color 0.3s',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     flexShrink: 0,
+    outline: 'none',
   },
   toggleDot: {
     position: 'absolute',
-    top: '1px',
-    left: '1px',
-    width: '12px',
-    height: '12px',
+    top: '2px',
+    left: '2px',
+    width: '14px',
+    height: '14px',
     borderRadius: '50%',
-    transition: 'transform 0.3s, background 0.3s',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   },
 };
