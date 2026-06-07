@@ -5,16 +5,17 @@ import { redirect } from 'next/navigation';
 import type { ShippingAddress } from '@/lib/supabase/types';
 
 async function requireAdmin() {
+  const serviceClient = await createServiceClient();
   if (process.env.BYPASS_AUTH === 'true') {
-    return { supabase: await createServiceClient() };
+    return { supabase: serviceClient };
   }
-  const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const userClient = await createClient();
+  const { data: { user }, error } = await userClient.auth.getUser();
   if (error || !user) redirect('/');
   const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@arkpelle.com';
   const adminEmails = adminEmail.split(',').map(e => e.trim().toLowerCase());
   if (!adminEmails.includes((user.email ?? '').toLowerCase())) redirect('/');
-  return { supabase };
+  return { supabase: serviceClient };
 }
 
 export interface OrderNotification {

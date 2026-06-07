@@ -10,15 +10,20 @@ import type { Order, OrderItem, Product } from '@/lib/supabase/types';
 import type { AdminOrder, AdminOrderItem, OrderStatus } from '@/lib/orders/types';
 
 // ─── Admin guard ──────────────────────────────────────────────────────────────
+// Always verifies the user's identity via cookie session,
+// but returns the SERVICE ROLE client for actual DB operations
+// so RLS policies never block admin mutations.
 
 async function requireAdmin() {
+  const serviceClient = await createServiceClient();
+
   if (process.env.BYPASS_AUTH === 'true') {
-    const serviceClient = await createServiceClient();
     return { supabase: serviceClient };
   }
 
-  const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
+  // Verify identity via cookie-based user client
+  const userClient = await createClient();
+  const { data: { user }, error } = await userClient.auth.getUser();
 
   if (error || !user) redirect('/');
 
@@ -29,7 +34,8 @@ async function requireAdmin() {
     redirect('/');
   }
 
-  return { supabase };
+  // Return service client — bypasses RLS for admin mutations
+  return { supabase: serviceClient };
 }
 
 // ─── READ: All orders with items ──────────────────────────────────────────────
