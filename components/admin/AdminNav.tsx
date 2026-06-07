@@ -89,9 +89,9 @@ export default function AdminNav() {
             <span style={styles.brandName}>Ark Pelle</span>
             <span style={styles.brandRole}>Admin</span>
           </div>
-          {/* Bell in sidebar */}
+          {/* Bell in sidebar — opens rightward so it isn't clipped */}
           <div style={{ marginLeft: 'auto' }}>
-            <NotificationBell />
+            <NotificationBell align="right" />
           </div>
         </div>
 
@@ -179,7 +179,7 @@ export default function AdminNav() {
           color: #EDE8E0;
         }
         .admin-sidebar {
-          width: 220px;
+          width: 260px;
           flex-shrink: 0;
           min-height: 100vh;
           background: #0B0806;
@@ -191,7 +191,7 @@ export default function AdminNav() {
           top: 0;
           align-self: flex-start;
           height: 100vh;
-          overflow-y: auto;
+          overflow: visible;
         }
 
         @media (max-width: 1024px) {

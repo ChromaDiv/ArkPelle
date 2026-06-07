@@ -37,7 +37,7 @@ function statusColor(status: string): string {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function NotificationBell() {
+export default function NotificationBell({ align = 'left' }: { align?: 'left' | 'right' }) {
   const router = useRouter();
   const [notifications, setNotifications] = useState<OrderNotification[]>([]);
   const [unseenCount, setUnseenCount]     = useState(0);
@@ -148,7 +148,16 @@ export default function NotificationBell() {
 
       {/* Dropdown */}
       {open && (
-        <div style={dropdown} role="dialog" aria-label="Order notifications">
+        <div
+          style={{
+            ...dropdown,
+            ...(align === 'right'
+              ? { left: 0, right: 'auto', transformOrigin: 'top left' }
+              : { right: 0, left: 'auto', transformOrigin: 'top right' }),
+          }}
+          role="dialog"
+          aria-label="Order notifications"
+        >
           {/* Header */}
           <div style={dropdownHeader}>
             <span style={dropdownTitle}>Notifications</span>
@@ -314,7 +323,6 @@ const badge: React.CSSProperties = {
 const dropdown: React.CSSProperties = {
   position: 'absolute',
   top: 'calc(100% + 8px)',
-  right: 0,
   width: '320px',
   background: '#0F0B08',
   border: '1px solid rgba(184,147,74,0.18)',
