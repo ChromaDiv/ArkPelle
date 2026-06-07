@@ -7,6 +7,7 @@ import GrainOverlay from '@/components/atoms/GrainOverlay';
 import GoldRule from '@/components/atoms/GoldRule';
 import FadeInView from '@/components/motion/FadeInView';
 import Link from 'next/link';
+import CartLink from '@/components/cart/CartLink';
 
 import { MOCK_PRODUCTS } from '@/lib/supabase/products-mock';
 
@@ -51,12 +52,7 @@ export default async function ShopPage() {
           <Link href="/" aria-label="Ark Pelle — Home">
             <img src="/logo.svg" alt="Ark Pelle" width={140} height={28} className="h-7 w-auto" />
           </Link>
-          <Link
-            href="/checkout"
-            className="font-body text-xs tracking-[0.2em] uppercase text-[var(--color-ink-muted)] hover:text-[var(--color-gold)] transition-colors duration-500"
-          >
-            Bag
-          </Link>
+          <CartLink />
         </nav>
 
         <div className="relative overflow-hidden">

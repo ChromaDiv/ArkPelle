@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import GrainOverlay from '@/components/atoms/GrainOverlay';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import CartLink from '@/components/cart/CartLink';
 
 /**
  * Hero section — full-viewport cinematic hero.
@@ -71,14 +72,7 @@ export default function Hero() {
         {/* Right side: Bag + hamburger */}
         <div className="flex items-center gap-6">
           {/* Cart link — always visible */}
-          <Link
-            href="/checkout"
-            id="nav-cart-link"
-            aria-label="View cart"
-            className="font-body text-xs tracking-[0.2em] uppercase text-[var(--color-ink-muted)] hover:text-[var(--color-gold)] transition-colors duration-500"
-          >
-            Bag
-          </Link>
+          <CartLink />
 
           {/* Mobile hamburger */}
           <button

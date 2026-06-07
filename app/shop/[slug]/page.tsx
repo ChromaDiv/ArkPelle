@@ -7,6 +7,7 @@ import Footer from '@/components/sections/Footer';
 import GrainOverlay from '@/components/atoms/GrainOverlay';
 import Link from 'next/link';
 import FadeInView from '@/components/motion/FadeInView';
+import CartLink from '@/components/cart/CartLink';
 import { MOCK_PRODUCTS } from '@/lib/supabase/products-mock';
 
 interface ProductPageProps {
@@ -123,12 +124,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             >
               ← Shop
             </Link>
-            <Link
-              href="/checkout"
-              className="font-body text-xs tracking-[0.2em] uppercase text-[var(--color-ink-muted)] hover:text-[var(--color-gold)] transition-colors duration-500"
-            >
-              Bag
-            </Link>
+            <CartLink />
           </div>
         </nav>
 
